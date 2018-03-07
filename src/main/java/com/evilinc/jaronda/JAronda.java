@@ -33,6 +33,7 @@ public class JAronda {
     
     private static void initializeControllers() {
         gameController = GameController.getInstance(mainFrame.getBoardPanel());
+        gameController.setRemainingMovesPanel(mainFrame.getRemainingMovesPanel());
         mainFrame.setGameController(gameController);
     }
     

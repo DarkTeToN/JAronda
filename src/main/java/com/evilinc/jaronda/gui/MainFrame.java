@@ -5,18 +5,23 @@
  */
 package com.evilinc.jaronda.gui;
 
-import com.evilinc.jaronda.controller.GameController;
-import com.evilinc.jaronda.controller.BoardController;
 import com.evilinc.jaronda.interfaces.IGameController;
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 /**
  *
@@ -26,11 +31,14 @@ public class MainFrame extends JFrame {
 
     private final BoardPanel boardPanel;
     private final JMenuBar menuBar;
+    private final LeftPanel leftPanel;
     private IGameController gameController;
+    private JEditorPane aboutEditorPane;
 
     public MainFrame() {
         this.boardPanel = new BoardPanel();
         this.menuBar = new JMenuBar();
+        this.leftPanel = new LeftPanel();
         initFrame();
         initializeMenuBar();
         addComponents();
@@ -46,6 +54,7 @@ public class MainFrame extends JFrame {
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(menuBar, BorderLayout.NORTH);
         getContentPane().add(boardPanel, BorderLayout.CENTER);
+        getContentPane().add(leftPanel, BorderLayout.WEST);
     }
 
     private void initializeMenuBar() {
@@ -81,10 +90,51 @@ public class MainFrame extends JFrame {
         final Action aboutJArondaAction = new AbstractAction("JAronda") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(MainFrame.this, "JAronda v1.0\nDevelopped by DarkTeToN.\nGNU General Public License v3.0\nhttps://github.com/DarkTeToN/JAronda", "About", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(MainFrame.this, getAboutEditorPane());
             }
         };
         return aboutJArondaAction;
+    }
+
+    private JEditorPane getAboutEditorPane() {
+        if (aboutEditorPane == null) {
+            // for copying style
+            final JLabel label = new JLabel();
+            final Font font = label.getFont();
+
+            // create some css from the label's font
+            StringBuffer style = new StringBuffer("font-family:" + font.getFamily() + ";");
+            style.append("font-weight:" + (font.isBold() ? "bold" : "normal") + ";");
+            style.append("font-size:" + font.getSize() + "pt;");
+
+            // html content
+            aboutEditorPane = new JEditorPane("text/html", "<html><body style=\"" + style + "\">" //
+                    + "JAronda v1.0<br>Developped by DarkTeToN<br>"
+                    + "GNU General Public License v3.0<br><br>"
+                    + "Github:<br>"
+                    + "<a href=\"https://github.com/DarkTeToN/JAronda\">https://github.com/DarkTeToN/JAronda</a><br><br>"
+                    + "Rules of the game:<br>"
+                    + "<a href=\"http://www.yucata.de/en/Rules/Aronda\">http://www.yucata.de/en/Rules/Aronda</a><br>"
+                    + "</body></html>");
+
+            // handle link events
+            aboutEditorPane.addHyperlinkListener(new HyperlinkListener() {
+                @Override
+                public void hyperlinkUpdate(HyperlinkEvent e) {
+                    if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED) && Desktop.isDesktopSupported()) {
+                        try {
+                            Desktop.getDesktop().browse(e.getURL().toURI());
+                        } catch (final Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            });
+            aboutEditorPane.setEditable(false);
+            aboutEditorPane.setBackground(label.getBackground());
+        }
+
+        return aboutEditorPane;
     }
 
     private Action getNewGameAction() {
@@ -100,7 +150,11 @@ public class MainFrame extends JFrame {
     public BoardPanel getBoardPanel() {
         return boardPanel;
     }
-    
+
+    public RemainingMovesPanel getRemainingMovesPanel() {
+        return leftPanel.getRemainingMovesPanel();
+    }
+
     public void setGameController(final IGameController gameController) {
         this.gameController = gameController;
     }

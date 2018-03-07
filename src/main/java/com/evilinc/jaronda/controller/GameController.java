@@ -8,6 +8,7 @@ package com.evilinc.jaronda.controller;
 import com.evilinc.jaronda.EPlayer;
 import com.evilinc.jaronda.exceptions.IllegalMoveException;
 import com.evilinc.jaronda.gui.BoardPanel;
+import com.evilinc.jaronda.gui.RemainingMovesPanel;
 import com.evilinc.jaronda.interfaces.IGameController;
 import com.evilinc.jaronda.model.Square;
 import java.awt.event.MouseAdapter;
@@ -29,6 +30,7 @@ public class GameController implements IGameController {
     private final BoardPanel boardPanel;
     private EPlayer playerTurn;
     private int numberOfMovesToPlay = 1;
+    private RemainingMovesPanel remainingMovesPanel;
 
     private GameController(final BoardPanel boardPanel) {
         this.boardPanel = boardPanel;
@@ -38,9 +40,16 @@ public class GameController implements IGameController {
         updateDisplay();
         initListeners();
     }
-    
+
+    public void setRemainingMovesPanel(RemainingMovesPanel remainingMovesPanel) {
+        this.remainingMovesPanel = remainingMovesPanel;
+    }
+
     private void updateDisplay() {
         boardController.updateBoardPanel(squareController.getSquares());
+        if (remainingMovesPanel != null) {
+            remainingMovesPanel.setRemainingMoves(numberOfMovesToPlay, playerTurn.getColor());
+        }
     }
 
     public static GameController getInstance(final BoardPanel boardPanel) {
@@ -67,7 +76,7 @@ public class GameController implements IGameController {
             }
         });
     }
-    
+
     private boolean isPlayedSquareValid(final int[] playedSquare) {
         return playedSquare[0] > -1 && playedSquare[1] > -1;
     }
@@ -84,12 +93,16 @@ public class GameController implements IGameController {
         final Square playedSquare = squareController.getSquareAt(row, squareNumber);
         checkMoveValidity(playedSquare);
         squareController.playMoveAt(row, squareNumber, playerTurn);
-        boardController.updateBoardPanel(squareController.getSquares());
-        checkForEndOfGame();
+        final EPlayer winner = getWinner();
         if (--numberOfMovesToPlay == 0) {
             resetNumberOfMovesToPlay();
             changePlayersTurn();
         }
+        updateDisplay();
+        if (winner != null) {
+            JOptionPane.showMessageDialog(null, winner.name() + " wins !", "End of the game", JOptionPane.INFORMATION_MESSAGE);
+        }
+
     }
 
     public void checkMoveValidity(final Square square) throws IllegalMoveException {
@@ -140,7 +153,7 @@ public class GameController implements IGameController {
     private void resetNumberOfMovesToPlay() {
         numberOfMovesToPlay = 2;
     }
-    
+
     private void changePlayersTurn() {
         if (playerTurn == EPlayer.BLACK) {
             playerTurn = EPlayer.WHITE;
@@ -149,11 +162,12 @@ public class GameController implements IGameController {
         }
     }
 
-    private void checkForEndOfGame() {
+    private EPlayer getWinner() {
         if (squareController.getNumberOfBlackConqueredSquares() >= 13) {
-            JOptionPane.showMessageDialog(null, "Black wins !", "End of the game", JOptionPane.INFORMATION_MESSAGE);
+            return EPlayer.BLACK;
         } else if (squareController.getNumberOfWhiteConqueredSquares() >= 13) {
-            JOptionPane.showMessageDialog(null, "White wins !", "End of the game", JOptionPane.INFORMATION_MESSAGE);
+            return EPlayer.WHITE;
         }
+        return null;
     }
 }
