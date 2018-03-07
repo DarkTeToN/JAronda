@@ -7,42 +7,84 @@ package com.evilinc.jaronda.controller;
 
 import com.evilinc.jaronda.EPlayer;
 import com.evilinc.jaronda.exceptions.IllegalMoveException;
+import com.evilinc.jaronda.gui.BoardPanel;
+import com.evilinc.jaronda.interfaces.IGameController;
 import com.evilinc.jaronda.model.Square;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author teton
  */
-public class GameController {
+public class GameController implements IGameController {
 
     private static GameController instance;
     private final SquareController squareController;
+    private final BoardController boardController;
+    private final BoardPanel boardPanel;
     private EPlayer playerTurn;
     private int numberOfMovesToPlay = 1;
 
-    private GameController() {
+    private GameController(final BoardPanel boardPanel) {
+        this.boardPanel = boardPanel;
         playerTurn = EPlayer.BLACK;
         squareController = SquareController.getInstance();
+        boardController = new BoardController(boardPanel);
+        updateDisplay();
+        initListeners();
+    }
+    
+    private void updateDisplay() {
+        boardController.updateBoardPanel(squareController.getSquares());
     }
 
-    public static GameController getInstance() {
+    public static GameController getInstance(final BoardPanel boardPanel) {
         if (instance == null) {
-            instance = new GameController();
+            instance = new GameController(boardPanel);
         }
         return instance;
     }
 
-    public void resetGame() {
+    private void initListeners() {
+        boardPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent event) {
+                if (SwingUtilities.isLeftMouseButton(event)) {
+                    int[] playedSquare = boardController.getMoveCoordinates(event.getPoint());
+                    if (isPlayedSquareValid(playedSquare)) {
+                        try {
+                            playMoveAt(playedSquare[0], playedSquare[1]);
+                        } catch (IllegalMoveException e) {
+                            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    private boolean isPlayedSquareValid(final int[] playedSquare) {
+        return playedSquare[0] > -1 && playedSquare[1] > -1;
+    }
+
+    @Override
+    public void startNewGame() {
         squareController.reset();
+        boardController.updateBoardPanel(squareController.getSquares());
+        numberOfMovesToPlay = 1;
+        playerTurn = EPlayer.BLACK;
     }
 
     public void playMoveAt(final int row, final int squareNumber) throws IllegalMoveException {
         final Square playedSquare = squareController.getSquareAt(row, squareNumber);
         checkMoveValidity(playedSquare);
         squareController.playMoveAt(row, squareNumber, playerTurn);
+        boardController.updateBoardPanel(squareController.getSquares());
         checkForEndOfGame();
         if (--numberOfMovesToPlay == 0) {
             resetNumberOfMovesToPlay();
@@ -71,7 +113,6 @@ public class GameController {
         }
     }
 
-    
     public boolean isConnectedToTheEdge(final Square square, final List<Square> alreadyVisitedSquares, EPlayer player) {
         alreadyVisitedSquares.add(square);
         if (square.isOnTheEdge()) {
@@ -91,7 +132,7 @@ public class GameController {
         }
         return false;
     }
-    
+
     public boolean isConquered(final Square square) {
         return square.getConqueringPlayer() != null;
     }
@@ -99,7 +140,7 @@ public class GameController {
     private void resetNumberOfMovesToPlay() {
         numberOfMovesToPlay = 2;
     }
-
+    
     private void changePlayersTurn() {
         if (playerTurn == EPlayer.BLACK) {
             playerTurn = EPlayer.WHITE;
@@ -111,10 +152,8 @@ public class GameController {
     private void checkForEndOfGame() {
         if (squareController.getNumberOfBlackConqueredSquares() >= 13) {
             JOptionPane.showMessageDialog(null, "Black wins !", "End of the game", JOptionPane.INFORMATION_MESSAGE);
-            System.exit(0);
-        } else if (squareController.getNumberOfWhiteConqueredSquares()>= 13) {
+        } else if (squareController.getNumberOfWhiteConqueredSquares() >= 13) {
             JOptionPane.showMessageDialog(null, "White wins !", "End of the game", JOptionPane.INFORMATION_MESSAGE);
-            System.exit(0);
         }
     }
 }

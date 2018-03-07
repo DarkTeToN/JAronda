@@ -63,11 +63,10 @@ public class BoardPanel extends JPanel {
     private int FIRST_CIRCLE_ORIGIN_X;
     private int FIRST_CIRCLE_ORIGIN_Y;
 
-    private final List<Square> squaresToDraw;
+    private Square[][] squaresToDraw;
     private final BufferedImage texture;
 
     public BoardPanel() {
-        this.squaresToDraw = new ArrayList<>();
         // TODO: Reuse the coordinates stored in the Square object to calculate dynamically all the lines coordinates
         recalculateCoordinates();
         URL imageUrl = getClass().getResource("/com/evilinc/jaronda/background/wood.jpg");
@@ -115,14 +114,16 @@ public class BoardPanel extends JPanel {
         recalculateCoordinates();
         drawCircles(g);
         g.setColor(Color.BLACK);
-        for (final Square currentSquare : squaresToDraw) {
-            final int row = currentSquare.getRow();
-            if (row < 3) {
-                double x1 = BOARD_CENTER_X + (4 - row) * FIRST_CIRCLE_RADIUS * Math.cos(currentSquare.getLeftLimitAngle());
-                double y1 = BOARD_CENTER_Y + (4 - row) * FIRST_CIRCLE_RADIUS * Math.sin(currentSquare.getLeftLimitAngle());
-                double x2 = BOARD_CENTER_X + (4 - row - 1) * FIRST_CIRCLE_RADIUS * Math.cos(currentSquare.getLeftLimitAngle());
-                double y2 = BOARD_CENTER_Y + (4 - row - 1) * FIRST_CIRCLE_RADIUS * Math.sin(currentSquare.getLeftLimitAngle());
-                g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
+        for (final Square[] squareRow : squaresToDraw) {
+            for (final Square currentSquare : squareRow) {
+                final int row = currentSquare.getRow();
+                if (row < 3) {
+                    double x1 = BOARD_CENTER_X + (4 - row) * FIRST_CIRCLE_RADIUS * Math.cos(currentSquare.getLeftLimitAngle());
+                    double y1 = BOARD_CENTER_Y + (4 - row) * FIRST_CIRCLE_RADIUS * Math.sin(currentSquare.getLeftLimitAngle());
+                    double x2 = BOARD_CENTER_X + (4 - row - 1) * FIRST_CIRCLE_RADIUS * Math.cos(currentSquare.getLeftLimitAngle());
+                    double y2 = BOARD_CENTER_Y + (4 - row - 1) * FIRST_CIRCLE_RADIUS * Math.sin(currentSquare.getLeftLimitAngle());
+                    g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
+                }
             }
         }
         // Draw the dots in the squares
@@ -293,9 +294,11 @@ public class BoardPanel extends JPanel {
 
     private void drawPawns(final Graphics g) {
         if (squaresToDraw != null) {
-            squaresToDraw.forEach((currentSquare) -> {
-                drawSquare(g, currentSquare);
-            });
+            for (final Square[] squareRow : squaresToDraw) {
+                for (final Square currentSquare : squareRow) {
+                    drawSquare(g, currentSquare);
+                }
+            }
         }
     }
 
@@ -368,9 +371,8 @@ public class BoardPanel extends JPanel {
         return BOARD_CENTER_Y;
     }
 
-    public void setSquaresToDraw(final List<Square> squaresToDraw) {
-        this.squaresToDraw.clear();
-        this.squaresToDraw.addAll(squaresToDraw);
+    public void setSquaresToDraw(final Square[][] squaresToDraw) {
+        this.squaresToDraw = squaresToDraw;
         repaint();
     }
 }

@@ -5,6 +5,8 @@
  */
 package com.evilinc.jaronda;
 
+import com.evilinc.jaronda.controller.GameController;
+import com.evilinc.jaronda.controller.BoardController;
 import com.evilinc.jaronda.gui.MainFrame;
 
 /**
@@ -13,11 +15,29 @@ import com.evilinc.jaronda.gui.MainFrame;
  */
 public class JAronda {
 
+    private static MainFrame mainFrame;
+    private static GameController gameController;
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new MainFrame().setVisible(true);
+        initializeGui();
+        initializeControllers();
+        launchJAronda();
+    }
+
+    private static void initializeGui() {
+        mainFrame = new MainFrame();
     }
     
+    private static void initializeControllers() {
+        gameController = GameController.getInstance(mainFrame.getBoardPanel());
+        mainFrame.setGameController(gameController);
+    }
+    
+    private static void launchJAronda() {
+        mainFrame.setVisible(true);
+    }
+
 }

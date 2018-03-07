@@ -223,12 +223,8 @@ public class SquareController {
         return squares[row][squareNumber];
     }
 
-    public List<Square> getSquareList() {
-        List<Square> squaresList = new ArrayList<>();
-        for (Square[] squareArray : squares) {
-            squaresList.addAll(Arrays.asList(squareArray));
-        }
-        return squaresList;
+    public Square[][] getSquares() {
+        return squares;
     }
 
     public void playMoveAt(final int row, final int squareNumber, final EPlayer currentPlayer) {

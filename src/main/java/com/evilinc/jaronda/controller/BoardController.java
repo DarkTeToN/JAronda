@@ -6,45 +6,24 @@
 package com.evilinc.jaronda.controller;
 
 import com.evilinc.jaronda.consts.MathsConstants;
-import com.evilinc.jaronda.exceptions.IllegalMoveException;
 import com.evilinc.jaronda.gui.BoardPanel;
+import com.evilinc.jaronda.model.Square;
 import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 /**
  *
  * @author teton
  */
-public class GuiToModelController {
+public class BoardController {
 
     private final BoardPanel boardPanel;
-    private final GameController gameController;
-    private final SquareController squareController;
+    private Square[][] squares;
 
     private int centerX = 0;
     private int centerY = 0;
 
-    public GuiToModelController(final BoardPanel boardPanel) {
+    public BoardController(final BoardPanel boardPanel) {
         this.boardPanel = boardPanel;
-        this.gameController = GameController.getInstance();
-        this.squareController = SquareController.getInstance();
-        boardPanel.setSquaresToDraw(squareController.getSquareList());
-        initListeners();
-    }
-
-    private void initListeners() {
-        boardPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    updateCenterCoordinates();
-                    playMoveAt(e.getPoint());
-                }
-            }
-        });
     }
 
     private void updateCenterCoordinates() {
@@ -52,20 +31,14 @@ public class GuiToModelController {
         centerY = boardPanel.getBoardCenterYCoordinate();
     }
 
-    private void playMoveAt(final Point clickedPoint) {
-        int[] playedSquare = getSquareFromBoardCoordinates(getBoardCoordinatesFromPanelCoordinates(clickedPoint));
-        if (isPlayedSquareValid(playedSquare)) {
-            try {
-                gameController.playMoveAt(playedSquare[0], playedSquare[1]);
-                boardPanel.setSquaresToDraw(squareController.getSquareList());
-            } catch (IllegalMoveException e) {
-                JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
+    public int[] getMoveCoordinates(final Point clickedPoint) {
+        updateCenterCoordinates();
+        return getSquareFromBoardCoordinates(getBoardCoordinatesFromPanelCoordinates(clickedPoint));
     }
-    
-    private boolean isPlayedSquareValid(final int[] playedSquare) {
-        return playedSquare[0] > -1 && playedSquare[1] > -1;
+
+    public void updateBoardPanel(Square[][] squares) {
+        this.squares = squares;
+        boardPanel.setSquaresToDraw(squares);
     }
 
     private Point getBoardCoordinatesFromPanelCoordinates(final Point clickedPoint) {
@@ -105,24 +78,14 @@ public class GuiToModelController {
     private double getAngle(final Point boardCoordinates) {
         double theta = Math.atan2(boardCoordinates.y, boardCoordinates.x);
         if (boardCoordinates.y < 0) {
-            theta += 2*Math.PI;
+            theta += 2 * Math.PI;
         }
         return theta;
     }
 
     private int getRow(final Point boardCoordinates) {
         final double distanceFromBoardCenter = Math.sqrt(Math.pow(boardCoordinates.x, 2) + Math.pow(boardCoordinates.y, 2));
-        if (distanceFromBoardCenter < BoardPanel.FIRST_CIRCLE_RADIUS) {
-            return 3;
-        } else if (distanceFromBoardCenter < BoardPanel.SECOND_CIRCLE_RADIUS) {
-            return 2;
-        } else if (distanceFromBoardCenter < BoardPanel.THIRD_CIRCLE_RADIUS) {
-            return 1;
-        } else if (distanceFromBoardCenter < BoardPanel.FOURTH_CIRCLE_RADIUS) {
-            return 0;
-        } else {
-            return -1;
-        }
+        return new Double(4 - Math.ceil(distanceFromBoardCenter / BoardPanel.FIRST_CIRCLE_RADIUS)).intValue();
     }
 
     private int getSquareIndexFromFirstRow(final double cosTheta, final int y) {
