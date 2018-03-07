@@ -39,7 +39,7 @@ public class MainFrame extends JFrame {
     private void initFrame() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(800, 650));
-        setTitle("JAronda");
+        setTitle("JAronda v1.0");
     }
 
     private void addComponents() {
