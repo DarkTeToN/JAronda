@@ -28,13 +28,13 @@ public class GameController implements IGameController {
     private final SquareController squareController;
     private final BoardController boardController;
     private final BoardPanel boardPanel;
-    private EPlayer playerTurn;
+    private EPlayer currentPlayer;
     private int numberOfMovesToPlay = 1;
     private RemainingMovesPanel remainingMovesPanel;
 
     private GameController(final BoardPanel boardPanel) {
         this.boardPanel = boardPanel;
-        playerTurn = EPlayer.BLACK;
+        currentPlayer = EPlayer.BLACK;
         squareController = SquareController.getInstance();
         boardController = new BoardController(boardPanel);
         updateDisplay();
@@ -48,7 +48,7 @@ public class GameController implements IGameController {
     private void updateDisplay() {
         boardController.updateBoardPanel(squareController.getSquares());
         if (remainingMovesPanel != null) {
-            remainingMovesPanel.setRemainingMoves(numberOfMovesToPlay, playerTurn.getColor());
+            remainingMovesPanel.setRemainingMoves(numberOfMovesToPlay, currentPlayer.getColor());
         }
     }
 
@@ -86,14 +86,14 @@ public class GameController implements IGameController {
         squareController.reset();
         boardController.updateBoardPanel(squareController.getSquares());
         numberOfMovesToPlay = 1;
-        playerTurn = EPlayer.BLACK;
-        remainingMovesPanel.setRemainingMoves(numberOfMovesToPlay, playerTurn.getColor());
+        currentPlayer = EPlayer.BLACK;
+        remainingMovesPanel.setRemainingMoves(numberOfMovesToPlay, currentPlayer.getColor());
     }
 
     public void playMoveAt(final int row, final int squareNumber) throws IllegalMoveException {
         final Square playedSquare = squareController.getSquareAt(row, squareNumber);
-        checkMoveValidity(playedSquare);
-        squareController.playMoveAt(row, squareNumber, playerTurn);
+        checkMoveValidity(playedSquare, currentPlayer);
+        squareController.playMoveAt(row, squareNumber, currentPlayer);
         final EPlayer winner = getWinner();
         if (--numberOfMovesToPlay == 0) {
             resetNumberOfMovesToPlay();
@@ -103,10 +103,35 @@ public class GameController implements IGameController {
         if (winner != null) {
             JOptionPane.showMessageDialog(null, winner.name() + " wins !", "End of the game", JOptionPane.INFORMATION_MESSAGE);
         }
-
     }
 
-    public void checkMoveValidity(final Square square) throws IllegalMoveException {
+    private EPlayer getNextPlayerTurn() {
+        EPlayer nextPlayer = currentPlayer;
+        if (numberOfMovesToPlay - 1 == 0) {
+            if (nextPlayer == EPlayer.BLACK) {
+                nextPlayer = EPlayer.WHITE;
+            } else {
+                nextPlayer = EPlayer.BLACK;
+            }
+        }
+        return nextPlayer;
+    }
+
+    private boolean canPlayerPlay(final EPlayer player) {
+        for (final Square[] squareRow : squareController.getSquares()) {
+            for (final Square currentSquare : squareRow) {
+                try {
+                    checkMoveValidity(currentSquare, player);
+                    return true;
+                } catch (final IllegalMoveException e) {
+
+                }
+            }
+        }
+        return false;
+    }
+
+    public void checkMoveValidity(final Square square, final EPlayer playerToCheck) throws IllegalMoveException {
         if (isConquered(square)) {
             throw new IllegalMoveException("This square is already conquered. It's not possible to play here.");
         }
@@ -116,7 +141,7 @@ public class GameController implements IGameController {
             final List<Square> alreadyVisitedSquare = new ArrayList<>();
             alreadyVisitedSquare.add(square);
             for (final Square currentAdjacentSquare : square.getAdjacentSquares()) {
-                if (isConnectedToTheEdge(currentAdjacentSquare, alreadyVisitedSquare, playerTurn)) {
+                if (isConnectedToTheEdge(currentAdjacentSquare, alreadyVisitedSquare, playerToCheck)) {
                     connected = true;
                     break;
                 }
@@ -156,18 +181,25 @@ public class GameController implements IGameController {
     }
 
     private void changePlayersTurn() {
-        if (playerTurn == EPlayer.BLACK) {
-            playerTurn = EPlayer.WHITE;
+        if (currentPlayer == EPlayer.BLACK) {
+            currentPlayer = EPlayer.WHITE;
         } else {
-            playerTurn = EPlayer.BLACK;
+            currentPlayer = EPlayer.BLACK;
         }
     }
 
     private EPlayer getWinner() {
+        final EPlayer nextPlayer = getNextPlayerTurn();
         if (squareController.getNumberOfBlackConqueredSquares() >= 13) {
             return EPlayer.BLACK;
         } else if (squareController.getNumberOfWhiteConqueredSquares() >= 13) {
             return EPlayer.WHITE;
+        } else if (!canPlayerPlay(nextPlayer)) {
+            if (nextPlayer == EPlayer.BLACK) {
+                return EPlayer.WHITE;
+            } else {
+                return EPlayer.BLACK;
+            }
         }
         return null;
     }
