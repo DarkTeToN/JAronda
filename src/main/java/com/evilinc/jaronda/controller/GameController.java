@@ -87,6 +87,7 @@ public class GameController implements IGameController {
         boardController.updateBoardPanel(squareController.getSquares());
         numberOfMovesToPlay = 1;
         playerTurn = EPlayer.BLACK;
+        remainingMovesPanel.setRemainingMoves(numberOfMovesToPlay, playerTurn.getColor());
     }
 
     public void playMoveAt(final int row, final int squareNumber) throws IllegalMoveException {

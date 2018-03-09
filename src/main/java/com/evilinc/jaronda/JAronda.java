@@ -6,7 +6,6 @@
 package com.evilinc.jaronda;
 
 import com.evilinc.jaronda.controller.GameController;
-import com.evilinc.jaronda.controller.BoardController;
 import com.evilinc.jaronda.gui.MainFrame;
 
 /**
