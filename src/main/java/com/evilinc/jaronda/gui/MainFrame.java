@@ -11,7 +11,6 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JEditorPane;
@@ -46,7 +45,7 @@ public class MainFrame extends JFrame {
 
     private void initFrame() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(800, 650));
+        setMinimumSize(new Dimension(500, 300));
         setTitle("JAronda v1.0");
     }
 

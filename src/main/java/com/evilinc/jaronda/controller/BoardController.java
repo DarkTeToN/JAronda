@@ -17,7 +17,6 @@ import java.awt.Point;
 public class BoardController {
 
     private final BoardPanel boardPanel;
-    private Square[][] squares;
 
     private int centerX = 0;
     private int centerY = 0;
@@ -37,7 +36,6 @@ public class BoardController {
     }
 
     public void updateBoardPanel(Square[][] squares) {
-        this.squares = squares;
         boardPanel.setSquaresToDraw(squares);
     }
 
@@ -85,7 +83,7 @@ public class BoardController {
 
     private int getRow(final Point boardCoordinates) {
         final double distanceFromBoardCenter = Math.sqrt(Math.pow(boardCoordinates.x, 2) + Math.pow(boardCoordinates.y, 2));
-        return new Double(4 - Math.ceil(distanceFromBoardCenter / BoardPanel.FIRST_CIRCLE_RADIUS)).intValue();
+        return new Double(4 - Math.ceil(distanceFromBoardCenter / boardPanel.getFirstCircleRadius())).intValue();
     }
 
     private int getSquareIndexFromFirstRow(final double cosTheta, final int y) {

@@ -25,16 +25,6 @@ import javax.swing.JPanel;
  */
 public class BoardPanel extends JPanel {
 
-    // Circles radiuses
-    public static final int FIRST_CIRCLE_RADIUS = 75;
-    public static final int FIRST_CIRCLE_DIAMETER = 2 * FIRST_CIRCLE_RADIUS;
-    public static final int SECOND_CIRCLE_DIAMETER = 2 * FIRST_CIRCLE_DIAMETER;
-    public static final int SECOND_CIRCLE_RADIUS = 2 * FIRST_CIRCLE_RADIUS;
-    public static final int THIRD_CIRCLE_DIAMETER = 3 * FIRST_CIRCLE_DIAMETER;
-    public static final int THIRD_CIRCLE_RADIUS = 3 * FIRST_CIRCLE_RADIUS;
-    public static final int FOURTH_CIRCLE_DIAMETER = 4 * FIRST_CIRCLE_DIAMETER;
-    public static final int FOURTH_CIRCLE_RADIUS = 4 * FIRST_CIRCLE_RADIUS;
-
     private final int DOT_RADIUS = 4;
     private final int DOT_DIAMETER = 2 * DOT_RADIUS;
     private final int NEGATIVE_MARGIN = 3 * DOT_RADIUS;
@@ -49,17 +39,26 @@ public class BoardPanel extends JPanel {
     private static final Color TRANSPARENT_BLACK = new Color(0, 0, 0, 255);
 
     // Board center coordinates
-    private int BOARD_CENTER_X;
-    private int BOARD_CENTER_Y;
+    private int boardCenterX;
+    private int boardCenterY;
 
-    private int FOURTH_CIRCLE_ORIGIN_X;
-    private int FOURTH_CIRCLE_ORIGIN_Y;
-    private int THIRD_CIRCLE_ORIGIN_X;
-    private int THIRD_CIRCLE_ORIGIN_Y;
-    private int SECOND_CIRCLE_ORIGIN_X;
-    private int SECOND_CIRCLE_ORIGIN_Y;
-    private int FIRST_CIRCLE_ORIGIN_X;
-    private int FIRST_CIRCLE_ORIGIN_Y;
+    private int fourthCircleOriginX;
+    private int fourthCircleOriginY;
+    private int thirdCircleOriginX;
+    private int thirdCircleOriginY;
+    private int secondCircleOriginX;
+    private int secondCircleOriginY;
+    private int firstCircleOriginX;
+    private int firstCircleOriginY;
+    // Circles radiuses
+    public int firstCircleRadius;
+    public int firstCircleDiameter;
+    public int secondCircleRadius;
+    public int secondCircleDiameter;
+    public int thirdCircleRadius;
+    public int thirCircleDiameter;
+    public int fourthCircleRadius;
+    public int fourthCircleDiameter;
 
     private Square[][] squaresToDraw;
     private final BufferedImage texture;
@@ -73,6 +72,7 @@ public class BoardPanel extends JPanel {
 
     private void recalculateCoordinates() {
         recaculatePanelCenter();
+        recalculateDimensions();
         recalculateCirclesOrigins();
     }
 
@@ -90,19 +90,31 @@ public class BoardPanel extends JPanel {
     }
 
     private void recaculatePanelCenter() {
-        BOARD_CENTER_X = (int) getWidth() / 2;
-        BOARD_CENTER_Y = (int) getHeight() / 2;
+        boardCenterX = (int) getWidth() / 2;
+        boardCenterY = (int) getHeight() / 2;
+    }
+
+    private void recalculateDimensions() {
+        final int minimumSize = Math.min(getHeight(), getWidth());
+        firstCircleRadius = (minimumSize - 20) / 8;
+        firstCircleDiameter = 2 * firstCircleRadius;
+        secondCircleDiameter = 2 * firstCircleDiameter;
+        secondCircleRadius = 2 * firstCircleRadius;
+        thirCircleDiameter = 3 * firstCircleDiameter;
+        thirdCircleRadius = 3 * firstCircleRadius;
+        fourthCircleDiameter = 4 * firstCircleDiameter;
+        fourthCircleRadius = 4 * firstCircleRadius;
     }
 
     private void recalculateCirclesOrigins() {
-        FOURTH_CIRCLE_ORIGIN_X = BOARD_CENTER_X - FOURTH_CIRCLE_RADIUS;
-        FOURTH_CIRCLE_ORIGIN_Y = BOARD_CENTER_Y - FOURTH_CIRCLE_RADIUS;
-        THIRD_CIRCLE_ORIGIN_X = BOARD_CENTER_X - THIRD_CIRCLE_RADIUS;
-        THIRD_CIRCLE_ORIGIN_Y = BOARD_CENTER_Y - THIRD_CIRCLE_RADIUS;
-        SECOND_CIRCLE_ORIGIN_X = BOARD_CENTER_X - SECOND_CIRCLE_RADIUS;
-        SECOND_CIRCLE_ORIGIN_Y = BOARD_CENTER_Y - SECOND_CIRCLE_RADIUS;
-        FIRST_CIRCLE_ORIGIN_X = BOARD_CENTER_X - FIRST_CIRCLE_RADIUS;
-        FIRST_CIRCLE_ORIGIN_Y = BOARD_CENTER_Y - FIRST_CIRCLE_RADIUS;
+        fourthCircleOriginX = boardCenterX - fourthCircleRadius;
+        fourthCircleOriginY = boardCenterY - fourthCircleRadius;
+        thirdCircleOriginX = boardCenterX - thirdCircleRadius;
+        thirdCircleOriginY = boardCenterY - thirdCircleRadius;
+        secondCircleOriginX = boardCenterX - secondCircleRadius;
+        secondCircleOriginY = boardCenterY - secondCircleRadius;
+        firstCircleOriginX = boardCenterX - firstCircleRadius;
+        firstCircleOriginY = boardCenterY - firstCircleRadius;
     }
 
     @Override
@@ -116,10 +128,10 @@ public class BoardPanel extends JPanel {
             for (final Square currentSquare : squareRow) {
                 final int row = currentSquare.getRow();
                 if (row < 3) {
-                    double x1 = BOARD_CENTER_X + (4 - row) * FIRST_CIRCLE_RADIUS * Math.cos(currentSquare.getLeftLimitAngle());
-                    double y1 = BOARD_CENTER_Y + (4 - row) * FIRST_CIRCLE_RADIUS * Math.sin(currentSquare.getLeftLimitAngle());
-                    double x2 = BOARD_CENTER_X + (4 - row - 1) * FIRST_CIRCLE_RADIUS * Math.cos(currentSquare.getLeftLimitAngle());
-                    double y2 = BOARD_CENTER_Y + (4 - row - 1) * FIRST_CIRCLE_RADIUS * Math.sin(currentSquare.getLeftLimitAngle());
+                    double x1 = boardCenterX + (4 - row) * firstCircleRadius * Math.cos(currentSquare.getLeftLimitAngle());
+                    double y1 = boardCenterY + (4 - row) * firstCircleRadius * Math.sin(currentSquare.getLeftLimitAngle());
+                    double x2 = boardCenterX + (4 - row - 1) * firstCircleRadius * Math.cos(currentSquare.getLeftLimitAngle());
+                    double y2 = boardCenterY + (4 - row - 1) * firstCircleRadius * Math.sin(currentSquare.getLeftLimitAngle());
                     g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
                 }
             }
@@ -137,22 +149,22 @@ public class BoardPanel extends JPanel {
 
         Graphics2D g2d = (Graphics2D) g;
 
-        Rectangle2D tr = new Rectangle2D.Double(FOURTH_CIRCLE_ORIGIN_X, FOURTH_CIRCLE_ORIGIN_Y, texture.getWidth(), texture.getHeight());
+        Rectangle2D tr = new Rectangle2D.Double(fourthCircleOriginX, fourthCircleOriginY, texture.getWidth(), texture.getHeight());
         TexturePaint tp = new TexturePaint(texture, tr);
 
         // draw texture filled ellipse, but with antialiasing
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        Ellipse2D e = new Ellipse2D.Float(FOURTH_CIRCLE_ORIGIN_X, FOURTH_CIRCLE_ORIGIN_Y, FOURTH_CIRCLE_DIAMETER, FOURTH_CIRCLE_DIAMETER);
+        Ellipse2D e = new Ellipse2D.Float(fourthCircleOriginX, fourthCircleOriginY, fourthCircleDiameter, fourthCircleDiameter);
         g2d.setPaint(tp);
         g2d.fill(e);
 
-        g.fillOval(FOURTH_CIRCLE_ORIGIN_X, FOURTH_CIRCLE_ORIGIN_Y, FOURTH_CIRCLE_DIAMETER, FOURTH_CIRCLE_DIAMETER);
+        g.fillOval(fourthCircleOriginX, fourthCircleOriginY, fourthCircleDiameter, fourthCircleDiameter);
         g.setColor(Color.BLACK);
-        g.drawOval(FOURTH_CIRCLE_ORIGIN_X, FOURTH_CIRCLE_ORIGIN_Y, FOURTH_CIRCLE_DIAMETER, FOURTH_CIRCLE_DIAMETER);
-        g.drawOval(THIRD_CIRCLE_ORIGIN_X, THIRD_CIRCLE_ORIGIN_Y, THIRD_CIRCLE_DIAMETER, THIRD_CIRCLE_DIAMETER);
-        g.drawOval(SECOND_CIRCLE_ORIGIN_X, SECOND_CIRCLE_ORIGIN_Y, SECOND_CIRCLE_DIAMETER, SECOND_CIRCLE_DIAMETER);
-        g.drawOval(FIRST_CIRCLE_ORIGIN_X, FIRST_CIRCLE_ORIGIN_Y, FIRST_CIRCLE_DIAMETER, FIRST_CIRCLE_DIAMETER);
+        g.drawOval(fourthCircleOriginX, fourthCircleOriginY, fourthCircleDiameter, fourthCircleDiameter);
+        g.drawOval(thirdCircleOriginX, thirdCircleOriginY, thirCircleDiameter, thirCircleDiameter);
+        g.drawOval(secondCircleOriginX, secondCircleOriginY, secondCircleDiameter, secondCircleDiameter);
+        g.drawOval(firstCircleOriginX, firstCircleOriginY, firstCircleDiameter, firstCircleDiameter);
     }
 
     private void drawDots(final Graphics g) {
@@ -179,114 +191,114 @@ public class BoardPanel extends JPanel {
     private void drawCenterSquareDots(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // Center square
-        g.fillOval(BOARD_CENTER_X - DOT_RADIUS, BOARD_CENTER_Y - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X - DOT_RADIUS, BOARD_CENTER_Y + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X - NEGATIVE_MARGIN, BOARD_CENTER_Y - DOT_RADIUS, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X + POSITIVE_MARGIN, BOARD_CENTER_Y - DOT_RADIUS, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX - DOT_RADIUS, boardCenterY - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX - DOT_RADIUS, boardCenterY + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX - NEGATIVE_MARGIN, boardCenterY - DOT_RADIUS, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX + POSITIVE_MARGIN, boardCenterY - DOT_RADIUS, DOT_DIAMETER, DOT_DIAMETER);
     }
 
     private void drawDotsInNorthSquareFirstRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // North square
-        g.fillOval(BOARD_CENTER_X - NEGATIVE_MARGIN,
-                BOARD_CENTER_Y - THIRD_CIRCLE_RADIUS - (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
+        g.fillOval(boardCenterX - NEGATIVE_MARGIN,
+                boardCenterY - thirdCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
                 DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X + POSITIVE_MARGIN,
-                BOARD_CENTER_Y - THIRD_CIRCLE_RADIUS - (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
+        g.fillOval(boardCenterX + POSITIVE_MARGIN,
+                boardCenterY - thirdCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
                 DOT_DIAMETER, DOT_DIAMETER);
     }
 
     private void drawDotsInSouthSquareFirstRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // South square
-        g.fillOval(BOARD_CENTER_X - NEGATIVE_MARGIN,
-                BOARD_CENTER_Y + THIRD_CIRCLE_RADIUS + (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
+        g.fillOval(boardCenterX - NEGATIVE_MARGIN,
+                boardCenterY + thirdCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
                 DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X + POSITIVE_MARGIN,
-                BOARD_CENTER_Y + THIRD_CIRCLE_RADIUS + (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
+        g.fillOval(boardCenterX + POSITIVE_MARGIN,
+                boardCenterY + thirdCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
                 DOT_DIAMETER, DOT_DIAMETER);
     }
 
     private void drawDotsInEastSquareFirstRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // East square
-        g.fillOval(BOARD_CENTER_X + THIRD_CIRCLE_RADIUS + (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
-                BOARD_CENTER_Y - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X + THIRD_CIRCLE_RADIUS + (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
-                BOARD_CENTER_Y + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX + thirdCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
+                boardCenterY - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX + thirdCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
+                boardCenterY + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
 
     }
 
     private void drawDotsInWestSquareFirstRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // West square
-        g.fillOval(BOARD_CENTER_X - THIRD_CIRCLE_RADIUS - (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
-                BOARD_CENTER_Y - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X - THIRD_CIRCLE_RADIUS - (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
-                BOARD_CENTER_Y + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX - thirdCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
+                boardCenterY - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX - thirdCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
+                boardCenterY + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
     }
 
     private void drawDotsInNorthSquareSecondRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // Middle North square
-        g.fillOval(BOARD_CENTER_X - NEGATIVE_MARGIN,
-                BOARD_CENTER_Y - SECOND_CIRCLE_RADIUS - (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
+        g.fillOval(boardCenterX - NEGATIVE_MARGIN,
+                boardCenterY - secondCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
                 DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X + POSITIVE_MARGIN,
-                BOARD_CENTER_Y - SECOND_CIRCLE_RADIUS - (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
+        g.fillOval(boardCenterX + POSITIVE_MARGIN,
+                boardCenterY - secondCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
                 DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X - DOT_RADIUS,
-                BOARD_CENTER_Y - SECOND_CIRCLE_RADIUS - (FIRST_CIRCLE_RADIUS / 2) - NEGATIVE_MARGIN,
+        g.fillOval(boardCenterX - DOT_RADIUS,
+                boardCenterY - secondCircleRadius - (firstCircleRadius / 2) - NEGATIVE_MARGIN,
                 DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X - DOT_RADIUS,
-                BOARD_CENTER_Y - SECOND_CIRCLE_RADIUS - (FIRST_CIRCLE_RADIUS / 2) + POSITIVE_MARGIN,
+        g.fillOval(boardCenterX - DOT_RADIUS,
+                boardCenterY - secondCircleRadius - (firstCircleRadius / 2) + POSITIVE_MARGIN,
                 DOT_DIAMETER, DOT_DIAMETER);
     }
 
     private void drawDotsInSouthSquareSecondRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // Middle South square
-        g.fillOval(BOARD_CENTER_X - NEGATIVE_MARGIN,
-                BOARD_CENTER_Y + SECOND_CIRCLE_RADIUS + (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
+        g.fillOval(boardCenterX - NEGATIVE_MARGIN,
+                boardCenterY + secondCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
                 DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X + POSITIVE_MARGIN,
-                BOARD_CENTER_Y + SECOND_CIRCLE_RADIUS + (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
+        g.fillOval(boardCenterX + POSITIVE_MARGIN,
+                boardCenterY + secondCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
                 DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X - DOT_RADIUS,
-                BOARD_CENTER_Y + SECOND_CIRCLE_RADIUS + (FIRST_CIRCLE_RADIUS / 2) - NEGATIVE_MARGIN,
+        g.fillOval(boardCenterX - DOT_RADIUS,
+                boardCenterY + secondCircleRadius + (firstCircleRadius / 2) - NEGATIVE_MARGIN,
                 DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X - DOT_RADIUS,
-                BOARD_CENTER_Y + SECOND_CIRCLE_RADIUS + (FIRST_CIRCLE_RADIUS / 2) + POSITIVE_MARGIN,
+        g.fillOval(boardCenterX - DOT_RADIUS,
+                boardCenterY + secondCircleRadius + (firstCircleRadius / 2) + POSITIVE_MARGIN,
                 DOT_DIAMETER, DOT_DIAMETER);
     }
 
     private void drawDotsInEastSquareSecondRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // Middle East square
-        g.fillOval(BOARD_CENTER_X + SECOND_CIRCLE_RADIUS + (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
-                BOARD_CENTER_Y - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X + SECOND_CIRCLE_RADIUS + (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
-                BOARD_CENTER_Y + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X + SECOND_CIRCLE_RADIUS + (FIRST_CIRCLE_RADIUS / 2) - NEGATIVE_MARGIN,
-                BOARD_CENTER_Y - DOT_RADIUS,
+        g.fillOval(boardCenterX + secondCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
+                boardCenterY - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX + secondCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
+                boardCenterY + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX + secondCircleRadius + (firstCircleRadius / 2) - NEGATIVE_MARGIN,
+                boardCenterY - DOT_RADIUS,
                 DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X + SECOND_CIRCLE_RADIUS + (FIRST_CIRCLE_RADIUS / 2) + POSITIVE_MARGIN,
-                BOARD_CENTER_Y - DOT_RADIUS,
+        g.fillOval(boardCenterX + secondCircleRadius + (firstCircleRadius / 2) + POSITIVE_MARGIN,
+                boardCenterY - DOT_RADIUS,
                 DOT_DIAMETER, DOT_DIAMETER);
     }
 
     private void drawDotsInWestSquareSecondRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // Middle West square
-        g.fillOval(BOARD_CENTER_X - SECOND_CIRCLE_RADIUS - (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
-                BOARD_CENTER_Y - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X - SECOND_CIRCLE_RADIUS - (FIRST_CIRCLE_RADIUS / 2) - DOT_RADIUS,
-                BOARD_CENTER_Y + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X - SECOND_CIRCLE_RADIUS - (FIRST_CIRCLE_RADIUS / 2) - NEGATIVE_MARGIN,
-                BOARD_CENTER_Y - DOT_RADIUS,
+        g.fillOval(boardCenterX - secondCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
+                boardCenterY - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX - secondCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
+                boardCenterY + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX - secondCircleRadius - (firstCircleRadius / 2) - NEGATIVE_MARGIN,
+                boardCenterY - DOT_RADIUS,
                 DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(BOARD_CENTER_X - SECOND_CIRCLE_RADIUS - (FIRST_CIRCLE_RADIUS / 2) + POSITIVE_MARGIN,
-                BOARD_CENTER_Y - DOT_RADIUS,
+        g.fillOval(boardCenterX - secondCircleRadius - (firstCircleRadius / 2) + POSITIVE_MARGIN,
+                boardCenterY - DOT_RADIUS,
                 DOT_DIAMETER, DOT_DIAMETER);
     }
 
@@ -312,11 +324,11 @@ public class BoardPanel extends JPanel {
         Color currentColor = Color.BLACK;
         final double meanAngle = (squareToDraw.getRightLimitAngle() - squareToDraw.getLeftLimitAngle()) / 2;
         final double pawnSpacingAngle = meanAngle / squareToDraw.getNecessaryPawnsToConquer();
-        final double distanceFromCenter = (3.5 - squareToDraw.getRow()) * FIRST_CIRCLE_RADIUS;
+        final double distanceFromCenter = (3.5 - squareToDraw.getRow()) * firstCircleRadius;
         for (int blackPanwsIndex = 0; blackPanwsIndex < squareToDraw.getNumberOfBlackPawns(); blackPanwsIndex++) {
             final double pawnAngle = (blackPanwsIndex + 1) * pawnSpacingAngle;
-            double yCoordinate = BOARD_CENTER_Y + Math.sin(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - SMALL_PAWN_RADIUS;
-            double xCoordinate = BOARD_CENTER_X + Math.cos(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - SMALL_PAWN_RADIUS;
+            double yCoordinate = boardCenterY + Math.sin(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - SMALL_PAWN_RADIUS;
+            double xCoordinate = boardCenterX + Math.cos(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - SMALL_PAWN_RADIUS;
             g.setColor(currentColor);
             g.fillOval((int) xCoordinate,
                     (int) yCoordinate,
@@ -329,8 +341,8 @@ public class BoardPanel extends JPanel {
         currentColor = Color.WHITE;
         for (int whitePawnsIndex = 0; whitePawnsIndex < squareToDraw.getNumberOfWhitePawns(); whitePawnsIndex++) {
             final double pawnAngle = meanAngle + (whitePawnsIndex + 1) * pawnSpacingAngle;
-            double yCoordinate = BOARD_CENTER_Y + Math.sin(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - SMALL_PAWN_RADIUS;
-            double xCoordinate = BOARD_CENTER_X + Math.cos(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - SMALL_PAWN_RADIUS;
+            double yCoordinate = boardCenterY + Math.sin(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - SMALL_PAWN_RADIUS;
+            double xCoordinate = boardCenterX + Math.cos(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - SMALL_PAWN_RADIUS;
             g.setColor(currentColor);
             g.fillOval((int) xCoordinate,
                     (int) yCoordinate,
@@ -344,13 +356,13 @@ public class BoardPanel extends JPanel {
 
     private void drawConqueredSquare(final Graphics g, final Square squareToDraw) {
         final int row = squareToDraw.getRow();
-        double distanceFromCenter = (3.5 - row) * FIRST_CIRCLE_RADIUS;
+        double distanceFromCenter = (3.5 - row) * firstCircleRadius;
         if (row == 3) {
             distanceFromCenter = 0;
         }
         final double angleToDrawThePawn = squareToDraw.getLeftLimitAngle() + ((squareToDraw.getRightLimitAngle() - squareToDraw.getLeftLimitAngle()) / 2);
-        double yCoordinate = BOARD_CENTER_Y + Math.sin(angleToDrawThePawn) * distanceFromCenter - CONQUERED_DOT_RADIUS;
-        double xCoordinate = BOARD_CENTER_X + Math.cos(angleToDrawThePawn) * distanceFromCenter - CONQUERED_DOT_RADIUS;
+        double yCoordinate = boardCenterY + Math.sin(angleToDrawThePawn) * distanceFromCenter - CONQUERED_DOT_RADIUS;
+        double xCoordinate = boardCenterX + Math.cos(angleToDrawThePawn) * distanceFromCenter - CONQUERED_DOT_RADIUS;
         g.setColor(squareToDraw.getConqueringPlayer().getColor());
         g.fillOval((int) xCoordinate,
                 (int) yCoordinate,
@@ -362,11 +374,15 @@ public class BoardPanel extends JPanel {
     }
 
     public int getBoardCenterXCoordinate() {
-        return BOARD_CENTER_X;
+        return boardCenterX;
     }
 
     public int getBoardCenterYCoordinate() {
-        return BOARD_CENTER_Y;
+        return boardCenterY;
+    }
+
+    public int getFirstCircleRadius() {
+        return firstCircleRadius;
     }
 
     public void setSquaresToDraw(final Square[][] squaresToDraw) {
