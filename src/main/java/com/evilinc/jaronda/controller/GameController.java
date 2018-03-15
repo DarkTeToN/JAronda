@@ -10,11 +10,18 @@ import com.evilinc.jaronda.exceptions.IllegalMoveException;
 import com.evilinc.jaronda.gui.BoardPanel;
 import com.evilinc.jaronda.gui.RemainingMovesPanel;
 import com.evilinc.jaronda.interfaces.IGameController;
+import com.evilinc.jaronda.model.Board;
+import com.evilinc.jaronda.model.Move;
+import com.evilinc.jaronda.model.SimpleSquare;
 import com.evilinc.jaronda.model.Square;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -26,19 +33,19 @@ public class GameController implements IGameController {
 
     private static GameController instance;
     private final SquareController squareController;
-    private final BoardController boardController;
-    private final BoardPanel boardPanel;
+    private final Stack<Move> playedMoves;
+    private BoardController boardController;
+    private BoardPanel boardPanel;
     private EPlayer currentPlayer;
     private int numberOfMovesToPlay = 1;
     private RemainingMovesPanel remainingMovesPanel;
+    private Action cancelAction;
 
-    private GameController(final BoardPanel boardPanel) {
-        this.boardPanel = boardPanel;
+    private GameController() {
         currentPlayer = EPlayer.BLACK;
-        squareController = SquareController.getInstance();
-        boardController = new BoardController(boardPanel);
-        updateDisplay();
-        initListeners();
+        playedMoves = new Stack<>();
+        squareController = new SquareController();
+        getCancelAction().setEnabled(false);
     }
 
     public void setRemainingMovesPanel(RemainingMovesPanel remainingMovesPanel) {
@@ -46,17 +53,27 @@ public class GameController implements IGameController {
     }
 
     private void updateDisplay() {
-        boardController.updateBoardPanel(squareController.getSquares());
+        if (boardController != null) {
+            boardController.updateBoardPanel(squareController.getSquares());
+        }
         if (remainingMovesPanel != null) {
             remainingMovesPanel.setRemainingMoves(numberOfMovesToPlay, currentPlayer.getColor());
         }
+        getCancelAction().setEnabled(!playedMoves.empty());
     }
 
-    public static GameController getInstance(final BoardPanel boardPanel) {
+    public static GameController getInstance() {
         if (instance == null) {
-            instance = new GameController(boardPanel);
+            instance = new GameController();
         }
         return instance;
+    }
+
+    public void setBoardPanel(BoardPanel boardPanel) {
+        this.boardPanel = boardPanel;
+        boardController = new BoardController(boardPanel);
+        initListeners();
+        updateDisplay();
     }
 
     private void initListeners() {
@@ -77,6 +94,18 @@ public class GameController implements IGameController {
         });
     }
 
+    public Action getCancelAction() {
+        if (cancelAction == null) {
+            cancelAction = new AbstractAction("Cancel last move") {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    cancelLastMove();
+                }
+            };
+        }
+        return cancelAction;
+    }
+
     private boolean isPlayedSquareValid(final int[] playedSquare) {
         return playedSquare[0] > -1 && playedSquare[1] > -1;
     }
@@ -88,12 +117,14 @@ public class GameController implements IGameController {
         numberOfMovesToPlay = 1;
         currentPlayer = EPlayer.BLACK;
         remainingMovesPanel.setRemainingMoves(numberOfMovesToPlay, currentPlayer.getColor());
+        playedMoves.clear();
     }
 
     public void playMoveAt(final int row, final int squareNumber) throws IllegalMoveException {
         final Square playedSquare = squareController.getSquareAt(row, squareNumber);
         checkMoveValidity(playedSquare, currentPlayer);
-        squareController.playMoveAt(row, squareNumber, currentPlayer);
+        final Move playedMove = squareController.playMoveAt(row, squareNumber, currentPlayer);
+        playedMoves.push(playedMove);
         final EPlayer winner = getWinner();
         if (--numberOfMovesToPlay == 0) {
             resetNumberOfMovesToPlay();
@@ -103,6 +134,17 @@ public class GameController implements IGameController {
         if (winner != null) {
             JOptionPane.showMessageDialog(null, winner.name() + " wins !", "End of the game", JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    public void cancelLastMove() {
+        final Move lastPlayedMove = playedMoves.pop();
+        squareController.cancelMove(lastPlayedMove);
+        if (++numberOfMovesToPlay == 3) {
+            numberOfMovesToPlay = 1;
+            changePlayersTurn();
+        }
+        updateDisplay();
+
     }
 
     private EPlayer getNextPlayerTurn() {
@@ -202,5 +244,43 @@ public class GameController implements IGameController {
             }
         }
         return null;
+    }
+
+    public Board getCurrentBoard() {
+        final Board currentBoard = new Board();
+        currentBoard.squares = getSimpleSquareList();
+        currentBoard.currentPlayer = currentPlayer.name();
+        currentBoard.winner = String.valueOf(getWinner());
+        currentBoard.remainingMoves = numberOfMovesToPlay;
+        currentBoard.blackScore = squareController.getNumberOfBlackConqueredSquares();
+        currentBoard.whiteScore = squareController.getNumberOfWhiteConqueredSquares();
+        return currentBoard;
+    }
+
+    public Board playMove(final Board boardBeforeMove) throws IllegalMoveException {
+        updateSquareListFromSimpleSquareList(boardBeforeMove.squares);
+        currentPlayer = EPlayer.fromString(boardBeforeMove.currentPlayer);
+        numberOfMovesToPlay = boardBeforeMove.remainingMoves;
+        playMoveAt(boardBeforeMove.moveRow, boardBeforeMove.moveSquareNumber);
+        final Board boardAfterMove = getCurrentBoard();
+        boardAfterMove.validMove = true;
+        return boardAfterMove;
+    }
+
+    private void updateSquareListFromSimpleSquareList(final List<SimpleSquare> simpleSquares) {
+        simpleSquares.forEach((simpleSquare) -> {
+            final Square square = squareController.getSquareAt(simpleSquare.row, simpleSquare.squareNumber);
+            square.conqueringPlayer = EPlayer.fromString(simpleSquare.conqueringColor);
+            square.numberOfBlackPawns = simpleSquare.numberOfBlackPawns;
+            square.numberOfWhitePawns = simpleSquare.numberOfWhitePawns;
+        });
+    }
+
+    private List<SimpleSquare> getSimpleSquareList() {
+        final List<SimpleSquare> squares = new ArrayList<>();
+        squareController.getSquareList().forEach((currentSquare) -> {
+            squares.add(new SimpleSquare(currentSquare));
+        });
+        return squares;
     }
 }

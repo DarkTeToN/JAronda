@@ -6,6 +6,8 @@
 package com.evilinc.jaronda.controller;
 
 import com.evilinc.jaronda.EPlayer;
+import com.evilinc.jaronda.model.Move;
+import com.evilinc.jaronda.model.SimpleSquare;
 import com.evilinc.jaronda.model.Square;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,22 +27,15 @@ public class SquareController {
     private static final int THIRD_ROW_INDEX = 2;
     private static final int FOURTH_ROW_INDEX = 3;
 
-    private final Square[][] squares;
+    public final Square[][] squares;
     private static SquareController instance;
     private int numberOfBlackConqueredSquares = 0;
     private int numberOfWhiteConqueredSquares = 0;
 
-    private SquareController() {
+    public SquareController() {
         squares = new Square[4][8];
         initializeSquares();
         initializeSquaresNeighbourood();
-    }
-
-    public static SquareController getInstance() {
-        if (instance == null) {
-            instance = new SquareController();
-        }
-        return instance;
     }
 
     private void initializeSquares() {
@@ -227,11 +222,49 @@ public class SquareController {
         return squares;
     }
 
-    public void playMoveAt(final int row, final int squareNumber, final EPlayer currentPlayer) {
+    public List<Square> getSquareList() {
+        List<Square> squaresList = new ArrayList<>();
+        for (Square[] squareArray : squares) {
+            squaresList.addAll(Arrays.asList(squareArray));
+        }
+        return squaresList;
+    }
+
+    public void setSquareList(final List<Square> squareList) {
+        for (final Square currentSquare : squareList) {
+            squares[currentSquare.getRow()][currentSquare.getSquareNumber()] = currentSquare;
+        }
+    }
+
+    public Move playMoveAt(final int row, final int squareNumber, final EPlayer currentPlayer) {
         final Square playedSquare = squares[row][squareNumber];
-        playedSquare.addPawn(currentPlayer);
-        updateConqueredStatus();
+        final SimpleSquare currentSquareBeforeMove = new SimpleSquare(playedSquare);
+        boolean isConquered = playedSquare.addPawn(currentPlayer);
+        final List<SimpleSquare> newlyConqueredSquares = updateConqueredStatus();
+        if (isConquered) {
+            newlyConqueredSquares.add(currentSquareBeforeMove);
+        }
         updateConqueredSquaresCounts();
+        return new Move(currentPlayer, row, squareNumber, newlyConqueredSquares);
+    }
+
+    public void cancelMove(final Move moveToCancel) {
+        final List<SimpleSquare> conqueredSquares = moveToCancel.getConqueredSquares();
+        if (conqueredSquares.isEmpty()) {
+            final Square squareToReinit = getSquareAt(moveToCancel.getRow(), moveToCancel.getSquareNumber());
+            if (moveToCancel.getPlayer() == EPlayer.BLACK) {
+                squareToReinit.numberOfBlackPawns--;
+            } else {
+                squareToReinit.numberOfWhitePawns--;
+            }
+        } else {
+            for (final SimpleSquare currentSquare : conqueredSquares) {
+                final Square squareToReinit = getSquareAt(currentSquare.row, currentSquare.squareNumber);
+                squareToReinit.conqueringPlayer = null;
+                squareToReinit.numberOfBlackPawns = currentSquare.numberOfBlackPawns;
+                squareToReinit.numberOfWhitePawns = currentSquare.numberOfWhitePawns;
+            }
+        }
     }
 
     public int getNumberOfBlackConqueredSquares() {
@@ -242,7 +275,8 @@ public class SquareController {
         return numberOfWhiteConqueredSquares;
     }
 
-    private void updateConqueredStatus() {
+    private List<SimpleSquare> updateConqueredStatus() {
+        final List<SimpleSquare> newlyConqueredSquares = new ArrayList<>();
         boolean newConqueredSquares = false;
         do {
             newConqueredSquares = false;
@@ -260,9 +294,11 @@ public class SquareController {
                             }
                         }
                         if (blackConqueredNeighbourSquares >= currentSquare.getNecessaryPawnsToConquer()) {
+                            newlyConqueredSquares.add(new SimpleSquare(currentSquare));
                             currentSquare.setConqueringPlayer(EPlayer.BLACK);
                             newConqueredSquares = true;
                         } else if (whiteConqueredNeighbourSquares >= currentSquare.getNecessaryPawnsToConquer()) {
+                            newlyConqueredSquares.add(new SimpleSquare(currentSquare));
                             currentSquare.setConqueringPlayer(EPlayer.WHITE);
                             newConqueredSquares = true;
                         }
@@ -270,8 +306,9 @@ public class SquareController {
                 }
             }
         } while (newConqueredSquares == true);
+        return newlyConqueredSquares;
     }
-    
+
     private void resetConqueredSquaresCounts() {
         numberOfBlackConqueredSquares = 0;
         numberOfWhiteConqueredSquares = 0;

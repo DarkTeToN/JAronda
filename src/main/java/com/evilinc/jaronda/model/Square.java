@@ -19,10 +19,10 @@ public class Square {
 
     private final int[] coordinates = new int[2];
     private final List<Square> adjacentSquares;
-    private int numberOfBlackPawns = 0;
-    private int numberOfWhitePawns = 0;
+    public int numberOfBlackPawns = 0;
+    public int numberOfWhitePawns = 0;
     private final int necessaryPawnsToConquer;
-    private EPlayer conqueringPlayer;
+    public EPlayer conqueringPlayer;
     private final double leftLimitAngle;
     private final double rightLimitAngle;
 
@@ -64,7 +64,7 @@ public class Square {
         return coordinates[0] == 0;
     }
 
-    public void addPawn(final EPlayer player) {
+    public boolean addPawn(final EPlayer player) {
         switch (player) {
             case BLACK:
                 numberOfBlackPawns++;
@@ -74,10 +74,10 @@ public class Square {
             default:
                 break;
         }
-        updateConqueredStatus();
+        return updateConqueredStatus();
     }
 
-    private void updateConqueredStatus() {
+    private boolean updateConqueredStatus() {
         if (numberOfBlackPawns == necessaryPawnsToConquer) {
             conqueringPlayer = EPlayer.BLACK;
         } else if (numberOfWhitePawns == necessaryPawnsToConquer) {
@@ -86,7 +86,9 @@ public class Square {
 
         if (conqueringPlayer != null) {
             resetPawns();
+            return true;
         }
+        return false;
     }
 
     public int getNumberOfBlackPawns() {

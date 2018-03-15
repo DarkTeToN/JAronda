@@ -24,4 +24,23 @@ public enum EPlayer {
     public Color getColor() {
         return playerColor;
     }
+
+    public static EPlayer fromString(final String player) {
+        for (final EPlayer currentPlayer : values()) {
+            if (currentPlayer.name().equals(player)) {
+                return currentPlayer;
+            }
+        }
+        return null;
+    }
+
+    public static EPlayer getOpponent(final EPlayer player) {
+        switch (player) {
+            case BLACK:
+                return WHITE;
+            case WHITE:
+            default:
+                return BLACK;
+        }
+    }
 }

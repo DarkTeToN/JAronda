@@ -154,6 +154,10 @@ public class MainFrame extends JFrame {
     public RemainingMovesPanel getRemainingMovesPanel() {
         return leftPanel.getRemainingMovesPanel();
     }
+    
+    public void setCancelAction(final Action cancelAction) {
+        leftPanel.setCancelAction(cancelAction);
+    }
 
     public void setGameController(final IGameController gameController) {
         this.gameController = gameController;
