@@ -5,7 +5,7 @@
  */
 package com.evilinc.jaronda.model;
 
-import com.evilinc.jaronda.EPlayer;
+import com.evilinc.jaronda.enums.EPlayer;
 import java.util.List;
 
 /**

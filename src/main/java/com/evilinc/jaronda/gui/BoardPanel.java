@@ -129,8 +129,7 @@ public class BoardPanel extends JPanel {
     }
 
     @Override
-    public void paint(Graphics g) {
-        super.paint(g);
+    public void paintComponent(Graphics g) {
         // Draw the board
         recalculateCoordinates();
         drawCircles(g);

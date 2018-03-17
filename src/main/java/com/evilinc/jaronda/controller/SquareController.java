@@ -5,7 +5,7 @@
  */
 package com.evilinc.jaronda.controller;
 
-import com.evilinc.jaronda.EPlayer;
+import com.evilinc.jaronda.enums.EPlayer;
 import com.evilinc.jaronda.model.Move;
 import com.evilinc.jaronda.model.SimpleSquare;
 import com.evilinc.jaronda.model.Square;
@@ -27,8 +27,7 @@ public class SquareController {
     private static final int THIRD_ROW_INDEX = 2;
     private static final int FOURTH_ROW_INDEX = 3;
 
-    public final Square[][] squares;
-    private static SquareController instance;
+    public Square[][] squares;
     private int numberOfBlackConqueredSquares = 0;
     private int numberOfWhiteConqueredSquares = 0;
 
@@ -234,8 +233,14 @@ public class SquareController {
         for (final Square currentSquare : squareList) {
             squares[currentSquare.getRow()][currentSquare.getSquareNumber()] = currentSquare;
         }
+        updateConqueredSquaresCounts();
     }
-
+    
+    public void setSquares(final Square[][] squares) {
+        this.squares = squares;
+        updateConqueredSquaresCounts();
+    }
+    
     public Move playMoveAt(final int row, final int squareNumber, final EPlayer currentPlayer) {
         final Square playedSquare = squares[row][squareNumber];
         final SimpleSquare currentSquareBeforeMove = new SimpleSquare(playedSquare);

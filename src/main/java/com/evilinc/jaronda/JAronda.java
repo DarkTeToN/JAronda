@@ -72,7 +72,7 @@ public class JAronda {
     }
 
     private static void initializeGameControllers() {
-        gameController = GameController.getInstance();
+        gameController = new GameController();
     }
 
     private static void initializeGraphicalControllers() {

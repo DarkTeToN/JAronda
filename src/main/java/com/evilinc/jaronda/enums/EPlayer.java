@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.evilinc.jaronda;
+package com.evilinc.jaronda.enums;
 
 import java.awt.Color;
 
@@ -12,19 +12,25 @@ import java.awt.Color;
  * @author teton
  */
 public enum EPlayer {
-    BLACK(Color.BLACK),
-    WHITE(Color.WHITE);
+    BLACK(Color.BLACK, EPlayerType.HUMAN),
+    WHITE(Color.WHITE, EPlayerType.CPU);
 
     private final Color playerColor;
+    public EPlayerType playerType;
 
-    private EPlayer(final Color playerColor) {
+    private EPlayer(final Color playerColor, final EPlayerType playerType) {
         this.playerColor = playerColor;
+        this.playerType = playerType;
     }
 
     public Color getColor() {
         return playerColor;
     }
 
+    public EPlayerType getPlayerType() {
+        return playerType;
+    }
+    
     public static EPlayer fromString(final String player) {
         for (final EPlayer currentPlayer : values()) {
             if (currentPlayer.name().equals(player)) {
