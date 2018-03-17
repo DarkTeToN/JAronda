@@ -14,14 +14,12 @@ import com.evilinc.jaronda.gui.RemainingMovesPanel;
 import com.evilinc.jaronda.interfaces.IGameController;
 import com.evilinc.jaronda.model.Board;
 import com.evilinc.jaronda.model.Move;
-import com.evilinc.jaronda.model.SimpleSquare;
+import com.evilinc.jaronda.model.JsonSquare;
 import com.evilinc.jaronda.model.Square;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -75,7 +73,6 @@ public class GameController implements IGameController {
         this.boardPanel = boardPanel;
         boardController = new BoardController(boardPanel);
         initListeners();
-        System.out.println("GameController.setBoardPanel");
         updateDisplay();
     }
 
@@ -119,10 +116,12 @@ public class GameController implements IGameController {
     }
 
     private void playCpuMove() throws IllegalMoveException {
-        final CpuMoveWorker worker = new CpuMoveWorker();
-        worker.execute();
-        if (boardPanel != null) {
-            boardPanel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        if (!RuleController.isGameFinished(squareController, turnController.getCurrentPlayer())) {
+            final CpuMoveWorker worker = new CpuMoveWorker();
+            worker.execute();
+            if (boardPanel != null) {
+                boardPanel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+            }
         }
     }
 
@@ -219,7 +218,7 @@ public class GameController implements IGameController {
         return boardAfterMove;
     }
 
-    private void updateSquareListFromSimpleSquareList(final List<SimpleSquare> simpleSquares) {
+    private void updateSquareListFromSimpleSquareList(final List<JsonSquare> simpleSquares) {
         simpleSquares.forEach((simpleSquare) -> {
             final Square square = squareController.getSquareAt(simpleSquare.row, simpleSquare.squareNumber);
             square.conqueringPlayer = EPlayer.fromString(simpleSquare.conqueringColor);
@@ -228,10 +227,10 @@ public class GameController implements IGameController {
         });
     }
 
-    private List<SimpleSquare> getSimpleSquareList() {
-        final List<SimpleSquare> squares = new ArrayList<>();
+    private List<JsonSquare> getSimpleSquareList() {
+        final List<JsonSquare> squares = new ArrayList<>();
         squareController.getSquareList().forEach((currentSquare) -> {
-            squares.add(new SimpleSquare(currentSquare));
+            squares.add(new JsonSquare(currentSquare));
         });
         return squares;
     }

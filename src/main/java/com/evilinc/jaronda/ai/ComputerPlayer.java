@@ -19,7 +19,7 @@ import com.evilinc.jaronda.model.Square;
 public class ComputerPlayer {
 
     private final EPlayer player;
-    private SquareController squareController;
+    private final SquareController squareController;
     private final TurnController turnController;
     private final int maxProof = 4;
 
@@ -44,9 +44,9 @@ public class ComputerPlayer {
                     final Move playedMove = squareController.playMoveAt(row, squareNumber, player);
                     turnController.playMove();
                     if (turnController.getCurrentPlayer() == player) {
-                        temp = calculateMax(gameBoard, maxProof - 1);
+                        temp = calculateMax(maxProof - 1);
                     } else {
-                        temp = calculateMin(gameBoard, maxProof - 1);
+                        temp = calculateMin(maxProof - 1);
                     }
                     if (temp > max) {
                         max = temp;
@@ -66,24 +66,24 @@ public class ComputerPlayer {
         return chosenMove;
     }
 
-    public int calculateMin(final Square[][] gameBoard, final int proof) {
+    public int calculateMin(final int proof) {
         int temp;
         int min = Integer.MAX_VALUE;
 
         //Si on est à la profondeur voulue, on retourne l'évaluation
         if (proof == 0 || RuleController.isGameFinished(squareController, turnController.getNextPlayer())) {
-            return evaluatePosition(gameBoard);
+            return evaluatePosition();
         }
 
-        for (int row = 0; row < gameBoard.length; row++) {
-            for (int squareNumber = 0; squareNumber < gameBoard[row].length; squareNumber++) {
+        for (int row = 0; row < squareController.squares.length; row++) {
+            for (int squareNumber = 0; squareNumber < squareController.squares[row].length; squareNumber++) {
                 if (RuleController.isMoveLegal(squareController.getSquareAt(row, squareNumber), player)) {
                     final Move playedMove = squareController.playMoveAt(row, squareNumber, player);
                     turnController.playMove();
                     if (turnController.getCurrentPlayer() == player) {
-                        temp = calculateMax(gameBoard, proof - 1);
+                        temp = calculateMax(proof - 1);
                     } else {
-                        temp = calculateMin(gameBoard, proof - 1);
+                        temp = calculateMin(proof - 1);
                     }
                     min = Math.min(min, temp);
                     squareController.cancelMove(playedMove);
@@ -94,24 +94,24 @@ public class ComputerPlayer {
         return min;
     }
 
-    public int calculateMax(final Square[][] gameBoard, final int proof) {
+    public int calculateMax(final int proof) {
         int temp;
         int max = Integer.MIN_VALUE;
 
         //Si on est à la profondeur voulue, on retourne l'évaluation
         if (proof == 0 || RuleController.isGameFinished(squareController, turnController.getNextPlayer())) {
-            return evaluatePosition(gameBoard);
+            return evaluatePosition();
         }
 
-        for (int row = 0; row < gameBoard.length; row++) {
-            for (int squareNumber = 0; squareNumber < gameBoard[row].length; squareNumber++) {
+        for (int row = 0; row < squareController.squares.length; row++) {
+            for (int squareNumber = 0; squareNumber < squareController.squares[row].length; squareNumber++) {
                 if (RuleController.isMoveLegal(squareController.getSquareAt(row, squareNumber), player)) {
                     final Move playedMove = squareController.playMoveAt(row, squareNumber, player);
                     turnController.playMove();
                     if (turnController.getCurrentPlayer() == player) {
-                        temp = calculateMax(gameBoard, proof - 1);
+                        temp = calculateMax(proof - 1);
                     } else {
-                        temp = calculateMin(gameBoard, proof - 1);
+                        temp = calculateMin(proof - 1);
                     }
                     max = Math.max(max, temp);
                     squareController.cancelMove(playedMove);
@@ -121,7 +121,7 @@ public class ComputerPlayer {
         return max;
     }
 
-    private int evaluatePosition(final Square[][] gameBoard) {
+    private int evaluatePosition() {
         final EPlayer winner = RuleController.getWinner(squareController, turnController);
         final int numberOfConqueredBlackSquares = 10 * squareController.getNumberOfBlackConqueredSquares();
         final int numberOfConqueredWhiteSquares = 10 * squareController.getNumberOfWhiteConqueredSquares();
@@ -130,10 +130,35 @@ public class ComputerPlayer {
         } else if (winner != null) {
             return -1000 + (EPlayer.BLACK == player ? numberOfConqueredWhiteSquares : numberOfConqueredBlackSquares);
         }
-        int numberOfCpuPlayerConqueredSquares = EPlayer.BLACK == player ? numberOfConqueredBlackSquares : numberOfConqueredWhiteSquares;
-        int numberOfOpponentPlayerConqueredSquares = EPlayer.BLACK == player ? numberOfConqueredWhiteSquares : numberOfConqueredBlackSquares;
 
-        return numberOfCpuPlayerConqueredSquares - numberOfOpponentPlayerConqueredSquares;
+        int cpuScore = 0;
+        int opponentScore = 0;
+        for (int row = 0; row < squareController.squares.length; row++) {
+            for (int squareNumber = 0; squareNumber < squareController.squares[row].length; squareNumber++) {
+                final Square currentSquare = squareController.getSquareAt(row, squareNumber);
+                final EPlayer conqueringPlayer = currentSquare.getConqueringPlayer();
+                final int numberOfAdjacentSquaresScore = 10 * currentSquare.getAdjacentSquares().size();
+                if (conqueringPlayer == null) {
+                    cpuScore += numberOfAdjacentSquaresScore;
+                    opponentScore += numberOfAdjacentSquaresScore;
+                    if (player == EPlayer.BLACK) {
+                        cpuScore += 10 * currentSquare.numberOfBlackPawns;
+                        opponentScore += 10 * currentSquare.numberOfWhitePawns;
+                    } else {
+                        cpuScore += 10 * currentSquare.numberOfWhitePawns;
+                        opponentScore += 10 * currentSquare.numberOfBlackPawns;
+                    }
+                } else {
+                    if (conqueringPlayer == player) {
+                        cpuScore += (numberOfAdjacentSquaresScore + 10 * currentSquare.getNecessaryPawnsToConquer());
+                    } else {
+                        opponentScore += (numberOfAdjacentSquaresScore + 10 * currentSquare.getNecessaryPawnsToConquer());
+                    }
+                }
+            }
+        }
+
+        return cpuScore - opponentScore;
     }
 
 }

@@ -5,7 +5,7 @@
  */
 package com.evilinc.jaronda.gui;
 
-import com.evilinc.jaronda.model.Square;
+import com.evilinc.jaronda.model.GuiSquare;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -60,11 +60,10 @@ public class BoardPanel extends JPanel {
     public int fourthCircleRadius;
     public int fourthCircleDiameter;
 
-    private Square[][] squaresToDraw;
+    private GuiSquare[][] squaresToDraw;
     private final BufferedImage texture;
 
     public BoardPanel() {
-        // TODO: Reuse the coordinates stored in the Square object to calculate dynamically all the lines coordinates
         recalculateCoordinates();
         URL imageUrl = getClass().getResource("/com/evilinc/jaronda/background/wood.jpg");
         texture = toBufferedImage(new ImageIcon(imageUrl).getImage());
@@ -134,8 +133,8 @@ public class BoardPanel extends JPanel {
         recalculateCoordinates();
         drawCircles(g);
         g.setColor(Color.BLACK);
-        for (final Square[] squareRow : squaresToDraw) {
-            for (final Square currentSquare : squareRow) {
+        for (final GuiSquare[] squareRow : squaresToDraw) {
+            for (final GuiSquare currentSquare : squareRow) {
                 final int row = currentSquare.getRow();
                 if (row < 3) {
                     double x1 = boardCenterX + (4 - row) * firstCircleRadius * Math.cos(currentSquare.getLeftLimitAngle());
@@ -314,15 +313,15 @@ public class BoardPanel extends JPanel {
 
     private void drawPawns(final Graphics g) {
         if (squaresToDraw != null) {
-            for (final Square[] squareRow : squaresToDraw) {
-                for (final Square currentSquare : squareRow) {
+            for (final GuiSquare[] squareRow : squaresToDraw) {
+                for (final GuiSquare currentSquare : squareRow) {
                     drawSquare(g, currentSquare);
                 }
             }
         }
     }
 
-    private void drawSquare(final Graphics g, final Square squareToDraw) {
+    private void drawSquare(final Graphics g, final GuiSquare squareToDraw) {
         if (squareToDraw.getConqueringPlayer() != null) {
             drawConqueredSquare(g, squareToDraw);
         } else if (squareToDraw.getNumberOfBlackPawns() > 0 || squareToDraw.getNumberOfWhitePawns() > 0) {
@@ -330,7 +329,7 @@ public class BoardPanel extends JPanel {
         }
     }
 
-    private void drawSmallPawn(final Graphics g, final Square squareToDraw) {
+    private void drawSmallPawn(final Graphics g, final GuiSquare squareToDraw) {
         Color currentColor = Color.BLACK;
         final double meanAngle = (squareToDraw.getRightLimitAngle() - squareToDraw.getLeftLimitAngle()) / 2;
         final double pawnSpacingAngle = meanAngle / squareToDraw.getNecessaryPawnsToConquer();
@@ -364,7 +363,7 @@ public class BoardPanel extends JPanel {
         }
     }
 
-    private void drawConqueredSquare(final Graphics g, final Square squareToDraw) {
+    private void drawConqueredSquare(final Graphics g, final GuiSquare squareToDraw) {
         final int row = squareToDraw.getRow();
         double distanceFromCenter = (3.5 - row) * firstCircleRadius;
         if (row == 3) {
@@ -395,7 +394,7 @@ public class BoardPanel extends JPanel {
         return firstCircleRadius;
     }
 
-    public void setSquaresToDraw(final Square[][] squaresToDraw) {
+    public void setSquaresToDraw(final GuiSquare[][] squaresToDraw) {
         this.squaresToDraw = squaresToDraw;
         repaint();
     }

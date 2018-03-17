@@ -17,9 +17,9 @@ public class Move {
     private final EPlayer player;
     private final int row;
     private final int squareNumber;
-    private final List<SimpleSquare> conqueredSquares;
+    private final List<JsonSquare> conqueredSquares;
 
-    public Move(final EPlayer player, final int row, final int squareNumber, final List<SimpleSquare> conqueredSquares) {
+    public Move(final EPlayer player, final int row, final int squareNumber, final List<JsonSquare> conqueredSquares) {
         this.player = player;
         this.row = row;
         this.squareNumber = squareNumber;
@@ -38,7 +38,7 @@ public class Move {
         return squareNumber;
     }
 
-    public List<SimpleSquare> getConqueredSquares() {
+    public List<JsonSquare> getConqueredSquares() {
         return conqueredSquares;
     }
 

@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class Board {
 
-    public List<SimpleSquare> squares;
+    public List<JsonSquare> squares;
     public String currentPlayer;
     public int remainingMoves;
     public String winner;

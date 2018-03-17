@@ -9,7 +9,7 @@ package com.evilinc.jaronda.model;
  *
  * @author teton
  */
-public class SimpleSquare {
+public class JsonSquare {
 
     public int row;
     public int squareNumber;
@@ -18,10 +18,10 @@ public class SimpleSquare {
     public int necessaryPawsToConquer;
     public String conqueringColor;
 
-    public SimpleSquare() {
+    public JsonSquare() {
     }
     
-    public SimpleSquare(final Square square) {
+    public JsonSquare(final Square square) {
         row = square.getRow();
         squareNumber = square.getSquareNumber();
         numberOfBlackPawns = square.getNumberOfBlackPawns();
