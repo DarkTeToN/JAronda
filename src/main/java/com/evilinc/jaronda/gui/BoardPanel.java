@@ -25,16 +25,16 @@ import javax.swing.JPanel;
  */
 public class BoardPanel extends JPanel {
 
-    private final int DOT_RADIUS = 4;
-    private final int DOT_DIAMETER = 2 * DOT_RADIUS;
-    private final int NEGATIVE_MARGIN = 3 * DOT_RADIUS;
-    private final int POSITIVE_MARGIN = DOT_RADIUS;
+    private int dotRadius;
+    private int dotDiameter;
+    private int negativeMargin;
+    private int positiveMargin;
 
-    private static final int SMALL_PAWN_RADIUS = 8;
-    private static final int SMALL_PAWN_DIAMETER = 2 * SMALL_PAWN_RADIUS;
+    private int smallPawnRadius;
+    private int smallPawnDiameter;
 
-    private static final int CONQUERED_DOT_RADIUS = 25;
-    private static final int CONQUERED_DOT_DIAMETER = 2 * CONQUERED_DOT_RADIUS;
+    private int conqueredDotRadius;
+    private int conqueredDotDiameter;
 
     private static final Color TRANSPARENT_BLACK = new Color(0, 0, 0, 255);
 
@@ -104,6 +104,17 @@ public class BoardPanel extends JPanel {
         thirdCircleRadius = 3 * firstCircleRadius;
         fourthCircleDiameter = 4 * firstCircleDiameter;
         fourthCircleRadius = 4 * firstCircleRadius;
+
+        conqueredDotRadius = (firstCircleRadius / 2) - 4;
+        conqueredDotDiameter = 2 * conqueredDotRadius;
+        smallPawnRadius = conqueredDotRadius / 4;
+        smallPawnDiameter = 2 * smallPawnRadius;
+
+        dotRadius = Math.max(1, firstCircleRadius / 20);
+        dotDiameter = 2 * dotRadius;
+
+        negativeMargin = 3 * dotRadius;
+        positiveMargin = dotRadius;
     }
 
     private void recalculateCirclesOrigins() {
@@ -191,115 +202,115 @@ public class BoardPanel extends JPanel {
     private void drawCenterSquareDots(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // Center square
-        g.fillOval(boardCenterX - DOT_RADIUS, boardCenterY - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX - DOT_RADIUS, boardCenterY + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX - NEGATIVE_MARGIN, boardCenterY - DOT_RADIUS, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX + POSITIVE_MARGIN, boardCenterY - DOT_RADIUS, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX - dotRadius, boardCenterY - negativeMargin, dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX - dotRadius, boardCenterY + positiveMargin, dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX - negativeMargin, boardCenterY - dotRadius, dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX + positiveMargin, boardCenterY - dotRadius, dotDiameter, dotDiameter);
     }
 
     private void drawDotsInNorthSquareFirstRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // North square
-        g.fillOval(boardCenterX - NEGATIVE_MARGIN,
-                boardCenterY - thirdCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
-                DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX + POSITIVE_MARGIN,
-                boardCenterY - thirdCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
-                DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX - negativeMargin,
+                boardCenterY - thirdCircleRadius - (firstCircleRadius / 2) - dotRadius,
+                dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX + positiveMargin,
+                boardCenterY - thirdCircleRadius - (firstCircleRadius / 2) - dotRadius,
+                dotDiameter, dotDiameter);
     }
 
     private void drawDotsInSouthSquareFirstRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // South square
-        g.fillOval(boardCenterX - NEGATIVE_MARGIN,
-                boardCenterY + thirdCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
-                DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX + POSITIVE_MARGIN,
-                boardCenterY + thirdCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
-                DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX - negativeMargin,
+                boardCenterY + thirdCircleRadius + (firstCircleRadius / 2) - dotRadius,
+                dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX + positiveMargin,
+                boardCenterY + thirdCircleRadius + (firstCircleRadius / 2) - dotRadius,
+                dotDiameter, dotDiameter);
     }
 
     private void drawDotsInEastSquareFirstRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // East square
-        g.fillOval(boardCenterX + thirdCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
-                boardCenterY - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX + thirdCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
-                boardCenterY + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX + thirdCircleRadius + (firstCircleRadius / 2) - dotRadius,
+                boardCenterY - negativeMargin, dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX + thirdCircleRadius + (firstCircleRadius / 2) - dotRadius,
+                boardCenterY + positiveMargin, dotDiameter, dotDiameter);
 
     }
 
     private void drawDotsInWestSquareFirstRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // West square
-        g.fillOval(boardCenterX - thirdCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
-                boardCenterY - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX - thirdCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
-                boardCenterY + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX - thirdCircleRadius - (firstCircleRadius / 2) - dotRadius,
+                boardCenterY - negativeMargin, dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX - thirdCircleRadius - (firstCircleRadius / 2) - dotRadius,
+                boardCenterY + positiveMargin, dotDiameter, dotDiameter);
     }
 
     private void drawDotsInNorthSquareSecondRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // Middle North square
-        g.fillOval(boardCenterX - NEGATIVE_MARGIN,
-                boardCenterY - secondCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
-                DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX + POSITIVE_MARGIN,
-                boardCenterY - secondCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
-                DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX - DOT_RADIUS,
-                boardCenterY - secondCircleRadius - (firstCircleRadius / 2) - NEGATIVE_MARGIN,
-                DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX - DOT_RADIUS,
-                boardCenterY - secondCircleRadius - (firstCircleRadius / 2) + POSITIVE_MARGIN,
-                DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX - negativeMargin,
+                boardCenterY - secondCircleRadius - (firstCircleRadius / 2) - dotRadius,
+                dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX + positiveMargin,
+                boardCenterY - secondCircleRadius - (firstCircleRadius / 2) - dotRadius,
+                dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX - dotRadius,
+                boardCenterY - secondCircleRadius - (firstCircleRadius / 2) - negativeMargin,
+                dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX - dotRadius,
+                boardCenterY - secondCircleRadius - (firstCircleRadius / 2) + positiveMargin,
+                dotDiameter, dotDiameter);
     }
 
     private void drawDotsInSouthSquareSecondRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // Middle South square
-        g.fillOval(boardCenterX - NEGATIVE_MARGIN,
-                boardCenterY + secondCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
-                DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX + POSITIVE_MARGIN,
-                boardCenterY + secondCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
-                DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX - DOT_RADIUS,
-                boardCenterY + secondCircleRadius + (firstCircleRadius / 2) - NEGATIVE_MARGIN,
-                DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX - DOT_RADIUS,
-                boardCenterY + secondCircleRadius + (firstCircleRadius / 2) + POSITIVE_MARGIN,
-                DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX - negativeMargin,
+                boardCenterY + secondCircleRadius + (firstCircleRadius / 2) - dotRadius,
+                dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX + positiveMargin,
+                boardCenterY + secondCircleRadius + (firstCircleRadius / 2) - dotRadius,
+                dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX - dotRadius,
+                boardCenterY + secondCircleRadius + (firstCircleRadius / 2) - negativeMargin,
+                dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX - dotRadius,
+                boardCenterY + secondCircleRadius + (firstCircleRadius / 2) + positiveMargin,
+                dotDiameter, dotDiameter);
     }
 
     private void drawDotsInEastSquareSecondRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // Middle East square
-        g.fillOval(boardCenterX + secondCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
-                boardCenterY - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX + secondCircleRadius + (firstCircleRadius / 2) - DOT_RADIUS,
-                boardCenterY + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX + secondCircleRadius + (firstCircleRadius / 2) - NEGATIVE_MARGIN,
-                boardCenterY - DOT_RADIUS,
-                DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX + secondCircleRadius + (firstCircleRadius / 2) + POSITIVE_MARGIN,
-                boardCenterY - DOT_RADIUS,
-                DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX + secondCircleRadius + (firstCircleRadius / 2) - dotRadius,
+                boardCenterY - negativeMargin, dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX + secondCircleRadius + (firstCircleRadius / 2) - dotRadius,
+                boardCenterY + positiveMargin, dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX + secondCircleRadius + (firstCircleRadius / 2) - negativeMargin,
+                boardCenterY - dotRadius,
+                dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX + secondCircleRadius + (firstCircleRadius / 2) + positiveMargin,
+                boardCenterY - dotRadius,
+                dotDiameter, dotDiameter);
     }
 
     private void drawDotsInWestSquareSecondRow(final Graphics g) {
         g.setColor(TRANSPARENT_BLACK);
         // Middle West square
-        g.fillOval(boardCenterX - secondCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
-                boardCenterY - NEGATIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX - secondCircleRadius - (firstCircleRadius / 2) - DOT_RADIUS,
-                boardCenterY + POSITIVE_MARGIN, DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX - secondCircleRadius - (firstCircleRadius / 2) - NEGATIVE_MARGIN,
-                boardCenterY - DOT_RADIUS,
-                DOT_DIAMETER, DOT_DIAMETER);
-        g.fillOval(boardCenterX - secondCircleRadius - (firstCircleRadius / 2) + POSITIVE_MARGIN,
-                boardCenterY - DOT_RADIUS,
-                DOT_DIAMETER, DOT_DIAMETER);
+        g.fillOval(boardCenterX - secondCircleRadius - (firstCircleRadius / 2) - dotRadius,
+                boardCenterY - negativeMargin, dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX - secondCircleRadius - (firstCircleRadius / 2) - dotRadius,
+                boardCenterY + positiveMargin, dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX - secondCircleRadius - (firstCircleRadius / 2) - negativeMargin,
+                boardCenterY - dotRadius,
+                dotDiameter, dotDiameter);
+        g.fillOval(boardCenterX - secondCircleRadius - (firstCircleRadius / 2) + positiveMargin,
+                boardCenterY - dotRadius,
+                dotDiameter, dotDiameter);
     }
 
     private void drawPawns(final Graphics g) {
@@ -327,30 +338,30 @@ public class BoardPanel extends JPanel {
         final double distanceFromCenter = (3.5 - squareToDraw.getRow()) * firstCircleRadius;
         for (int blackPanwsIndex = 0; blackPanwsIndex < squareToDraw.getNumberOfBlackPawns(); blackPanwsIndex++) {
             final double pawnAngle = (blackPanwsIndex + 1) * pawnSpacingAngle;
-            double yCoordinate = boardCenterY + Math.sin(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - SMALL_PAWN_RADIUS;
-            double xCoordinate = boardCenterX + Math.cos(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - SMALL_PAWN_RADIUS;
+            double yCoordinate = boardCenterY + Math.sin(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - smallPawnRadius;
+            double xCoordinate = boardCenterX + Math.cos(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - smallPawnRadius;
             g.setColor(currentColor);
             g.fillOval((int) xCoordinate,
                     (int) yCoordinate,
-                    SMALL_PAWN_DIAMETER, SMALL_PAWN_DIAMETER);
+                    smallPawnDiameter, smallPawnDiameter);
             g.setColor(Color.BLACK);
             g.drawOval((int) xCoordinate,
                     (int) yCoordinate,
-                    SMALL_PAWN_DIAMETER, SMALL_PAWN_DIAMETER);
+                    smallPawnDiameter, smallPawnDiameter);
         }
         currentColor = Color.WHITE;
         for (int whitePawnsIndex = 0; whitePawnsIndex < squareToDraw.getNumberOfWhitePawns(); whitePawnsIndex++) {
             final double pawnAngle = meanAngle + (whitePawnsIndex + 1) * pawnSpacingAngle;
-            double yCoordinate = boardCenterY + Math.sin(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - SMALL_PAWN_RADIUS;
-            double xCoordinate = boardCenterX + Math.cos(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - SMALL_PAWN_RADIUS;
+            double yCoordinate = boardCenterY + Math.sin(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - smallPawnRadius;
+            double xCoordinate = boardCenterX + Math.cos(squareToDraw.getLeftLimitAngle() + pawnAngle) * distanceFromCenter - smallPawnRadius;
             g.setColor(currentColor);
             g.fillOval((int) xCoordinate,
                     (int) yCoordinate,
-                    SMALL_PAWN_DIAMETER, SMALL_PAWN_DIAMETER);
+                    smallPawnDiameter, smallPawnDiameter);
             g.setColor(Color.BLACK);
             g.drawOval((int) xCoordinate,
                     (int) yCoordinate,
-                    SMALL_PAWN_DIAMETER, SMALL_PAWN_DIAMETER);
+                    smallPawnDiameter, smallPawnDiameter);
         }
     }
 
@@ -361,16 +372,16 @@ public class BoardPanel extends JPanel {
             distanceFromCenter = 0;
         }
         final double angleToDrawThePawn = squareToDraw.getLeftLimitAngle() + ((squareToDraw.getRightLimitAngle() - squareToDraw.getLeftLimitAngle()) / 2);
-        double yCoordinate = boardCenterY + Math.sin(angleToDrawThePawn) * distanceFromCenter - CONQUERED_DOT_RADIUS;
-        double xCoordinate = boardCenterX + Math.cos(angleToDrawThePawn) * distanceFromCenter - CONQUERED_DOT_RADIUS;
+        double yCoordinate = boardCenterY + Math.sin(angleToDrawThePawn) * distanceFromCenter - conqueredDotRadius;
+        double xCoordinate = boardCenterX + Math.cos(angleToDrawThePawn) * distanceFromCenter - conqueredDotRadius;
         g.setColor(squareToDraw.getConqueringPlayer().getColor());
         g.fillOval((int) xCoordinate,
                 (int) yCoordinate,
-                CONQUERED_DOT_DIAMETER, CONQUERED_DOT_DIAMETER);
+                conqueredDotDiameter, conqueredDotDiameter);
         g.setColor(Color.BLACK);
         g.drawOval((int) xCoordinate,
                 (int) yCoordinate,
-                CONQUERED_DOT_DIAMETER, CONQUERED_DOT_DIAMETER);
+                conqueredDotDiameter, conqueredDotDiameter);
     }
 
     public int getBoardCenterXCoordinate() {
