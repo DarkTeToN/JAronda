@@ -109,6 +109,7 @@ public class GameController implements IGameController {
                 if (boardPanel != null) {
                     boardPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 }
+                getCancelAction().setEnabled(true);
             }
         } catch (IllegalMoveException ex) {
             Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
@@ -116,6 +117,7 @@ public class GameController implements IGameController {
     }
 
     private void playCpuMove() throws IllegalMoveException {
+        getCancelAction().setEnabled(false);
         if (!RuleController.isGameFinished(squareController, turnController.getCurrentPlayer())) {
             final CpuMoveWorker worker = new CpuMoveWorker();
             worker.execute();
@@ -167,18 +169,15 @@ public class GameController implements IGameController {
         boardController.updateBoardPanel(squareController.getSquares());
         turnController.reset();
         playedMoves.clear();
-        System.out.println("GameController.startNewGame");
         updateDisplay();
     }
 
     public void playMoveAt(final int row, final int squareNumber) throws IllegalMoveException {
-        System.out.println(turnController.getCurrentPlayer().name() + " played at: " + row + "," + squareNumber);
         final Square playedSquare = squareController.getSquareAt(row, squareNumber);
         RuleController.checkMoveValidity(playedSquare, turnController.getCurrentPlayer());
         final Move playedMove = squareController.playMoveAt(row, squareNumber, turnController.getCurrentPlayer());
         playedMoves.push(playedMove);
         turnController.playMove();
-        System.out.println("GameController.playMoveAt");
         updateDisplay();
         final EPlayer winner = RuleController.getWinner(squareController, turnController);
 
@@ -191,7 +190,6 @@ public class GameController implements IGameController {
         final Move lastPlayedMove = playedMoves.pop();
         squareController.cancelMove(lastPlayedMove);
         turnController.cancelMove();
-        System.out.println("GameController.cancelLastMove");
         updateDisplay();
 
     }

@@ -18,10 +18,14 @@ import com.evilinc.jaronda.model.Square;
  */
 public class ComputerPlayer {
 
+    private static final long MIN_REFERENCE_CALCULATION_TIME = 5000l;
+    private static final long MAX_REFERENCE_CALCULATION_TIME = 10000l;
+
     private final EPlayer player;
     private final SquareController squareController;
     private final TurnController turnController;
-    private final int maxProof = 4;
+    private final int maxProof = 5;
+    private int numberOfCalculatedPositions;
 
     public ComputerPlayer(final EPlayer player) {
         this.player = player;
@@ -31,8 +35,10 @@ public class ComputerPlayer {
 
     public int[] getMove(final Square[][] gameBoard) {
         final long startTime = System.currentTimeMillis();
+        numberOfCalculatedPositions = 0;
         int temp;
         int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
         int maxRow = -1;
         int maxSquareNumber = -1;
         final int[] chosenMove = new int[2];
@@ -44,23 +50,36 @@ public class ComputerPlayer {
                     final Move playedMove = squareController.playMoveAt(row, squareNumber, player);
                     turnController.playMove();
                     if (turnController.getCurrentPlayer() == player) {
-                        temp = calculateMax(maxProof - 1);
+                        temp = calculateMax(max, Integer.MAX_VALUE, maxProof - 1);
+                        if (temp > max) {
+                            max = temp;
+                            maxRow = row;
+                            maxSquareNumber = squareNumber;
+                        }
                     } else {
-                        temp = calculateMin(maxProof - 1);
+                        temp = calculateMin(min, Integer.MAX_VALUE, maxProof - 1);
+                        if (temp > min) {
+                            min = temp;
+                            maxRow = row;
+                            maxSquareNumber = squareNumber;
+                        }
                     }
-                    if (temp > max) {
-                        max = temp;
-                        maxRow = row;
-                        maxSquareNumber = squareNumber;
-                    }
-                    max = Math.max(max, temp);
                     turnController.cancelMove();
                     squareController.cancelMove(playedMove);
                 }
             }
         }
+        System.out.println("Evaluation: " + max);
         final long endTime = System.currentTimeMillis();
-        System.out.println("Move calculated in: " + (endTime - startTime) + "ms");
+        final long currentCalculationTime = endTime - startTime;
+//        if (currentCalculationTime < MIN_REFERENCE_CALCULATION_TIME) {
+//            maxProof++;
+//            System.out.println("Too short: increasing maximum proof to " + maxProof);
+//        } else if (currentCalculationTime > MAX_REFERENCE_CALCULATION_TIME) {
+//            maxProof--;
+//            System.out.println("Too long: decreasing maximum proof to " + maxProof);
+//        }
+        System.out.println(numberOfCalculatedPositions + " moves calculated in: " + (endTime - startTime) + "ms");
         chosenMove[0] = maxRow;
         chosenMove[1] = maxSquareNumber;
         return chosenMove;
@@ -72,6 +91,7 @@ public class ComputerPlayer {
 
         //Si on est à la profondeur voulue, on retourne l'évaluation
         if (proof == 0 || RuleController.isGameFinished(squareController, turnController.getNextPlayer())) {
+            increment();
             return evaluatePosition();
         }
 
@@ -100,6 +120,7 @@ public class ComputerPlayer {
 
         //Si on est à la profondeur voulue, on retourne l'évaluation
         if (proof == 0 || RuleController.isGameFinished(squareController, turnController.getNextPlayer())) {
+            increment();
             return evaluatePosition();
         }
 
@@ -119,6 +140,71 @@ public class ComputerPlayer {
             }
         }
         return max;
+    }
+
+    public int calculateMin(int alpha, int beta, final int proof) {
+        int temp;
+        //Si on est à la profondeur voulue, on retourne l'évaluation
+        if (proof == 0 || RuleController.isGameFinished(squareController, turnController.getNextPlayer())) {
+            increment();
+            return evaluatePosition();
+        }
+
+        for (int row = 0; row < squareController.squares.length; row++) {
+            for (int squareNumber = 0; squareNumber < squareController.squares[row].length; squareNumber++) {
+                if (RuleController.isMoveLegal(squareController.getSquareAt(row, squareNumber), player)) {
+                    final Move playedMove = squareController.playMoveAt(row, squareNumber, player);
+                    turnController.playMove();
+                    if (turnController.getCurrentPlayer() == player) {
+                        temp = calculateMax(proof - 1);
+                    } else {
+                        temp = calculateMin(proof - 1);
+                    }
+                    squareController.cancelMove(playedMove);
+                    turnController.cancelMove();
+                    beta = Math.min(beta, temp);
+                    if (alpha > beta) {
+                        return alpha;
+                    }
+                }
+            }
+        }
+        return beta;
+    }
+
+    public int calculateMax(int alpha, int beta, final int proof) {
+        int temp;
+
+        //Si on est à la profondeur voulue, on retourne l'évaluation
+        if (proof == 0 || RuleController.isGameFinished(squareController, turnController.getNextPlayer())) {
+            increment();
+            return evaluatePosition();
+        }
+
+        for (int row = 0; row < squareController.squares.length; row++) {
+            for (int squareNumber = 0; squareNumber < squareController.squares[row].length; squareNumber++) {
+                if (RuleController.isMoveLegal(squareController.getSquareAt(row, squareNumber), player)) {
+                    final Move playedMove = squareController.playMoveAt(row, squareNumber, player);
+                    turnController.playMove();
+                    if (turnController.getCurrentPlayer() == player) {
+                        temp = calculateMax(alpha, beta, proof - 1);
+                    } else {
+                        temp = calculateMin(alpha, beta, proof - 1);
+                    }
+                    squareController.cancelMove(playedMove);
+                    turnController.cancelMove();
+                    alpha = Math.max(alpha, temp);
+                    if (beta < alpha) {
+                        return beta;
+                    }
+                }
+            }
+        }
+        return alpha;
+    }
+
+    private void increment() {
+        numberOfCalculatedPositions++;
     }
 
     private int evaluatePosition() {
@@ -157,7 +243,6 @@ public class ComputerPlayer {
                 }
             }
         }
-
         return cpuScore - opponentScore;
     }
 

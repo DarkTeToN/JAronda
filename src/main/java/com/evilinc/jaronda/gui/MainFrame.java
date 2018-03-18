@@ -140,6 +140,8 @@ public class MainFrame extends JFrame {
         final Action newGameAction = new AbstractAction("New game") {
             @Override
             public void actionPerformed(ActionEvent e) {
+                final NewGameDialog newGameDialog = new NewGameDialog(MainFrame.this);
+                newGameDialog.setVisible(true);
                 gameController.startNewGame();
             }
         };

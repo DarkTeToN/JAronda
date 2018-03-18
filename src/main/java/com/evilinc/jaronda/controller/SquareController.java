@@ -112,8 +112,8 @@ public class SquareController {
     }
 
     public void reset() {
-        for (int row = 0; row < 4; row++) {
-            for (int squareNumber = 0; squareNumber < 8; squareNumber++) {
+        for (int row = 0; row < squares.length; row++) {
+            for (int squareNumber = 0; squareNumber < squares[row].length; squareNumber++) {
                 squares[row][squareNumber].reset();
             }
         }
@@ -185,7 +185,7 @@ public class SquareController {
     public int getNumberOfWhiteConqueredSquares() {
         return numberOfWhiteConqueredSquares;
     }
-    
+
     private List<JsonSquare> updateConqueredStatus() {
         final List<JsonSquare> newlyConqueredSquares = new ArrayList<>();
         boolean newConqueredSquares = false;

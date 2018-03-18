@@ -13,7 +13,7 @@ import java.awt.Color;
  */
 public enum EPlayer {
     BLACK(Color.BLACK, EPlayerType.HUMAN),
-    WHITE(Color.WHITE, EPlayerType.CPU);
+    WHITE(Color.WHITE, EPlayerType.HUMAN);
 
     private final Color playerColor;
     public EPlayerType playerType;
