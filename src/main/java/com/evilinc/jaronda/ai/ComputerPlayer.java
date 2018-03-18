@@ -39,6 +39,7 @@ public class ComputerPlayer {
         int temp;
         int max = Integer.MIN_VALUE;
         int min = Integer.MAX_VALUE;
+        int borne = 0;
         int maxRow = -1;
         int maxSquareNumber = -1;
         final int[] chosenMove = new int[2];
@@ -55,6 +56,7 @@ public class ComputerPlayer {
                             max = temp;
                             maxRow = row;
                             maxSquareNumber = squareNumber;
+                            borne = max;
                         }
                     } else {
                         temp = calculateMin(min, Integer.MAX_VALUE, maxProof - 1);
@@ -62,6 +64,7 @@ public class ComputerPlayer {
                             min = temp;
                             maxRow = row;
                             maxSquareNumber = squareNumber;
+                            borne = min;
                         }
                     }
                     turnController.cancelMove();
@@ -69,7 +72,7 @@ public class ComputerPlayer {
                 }
             }
         }
-        System.out.println("Evaluation: " + max);
+        System.out.println("Evaluation: " + borne);
         final long endTime = System.currentTimeMillis();
         final long currentCalculationTime = endTime - startTime;
 //        if (currentCalculationTime < MIN_REFERENCE_CALCULATION_TIME) {
