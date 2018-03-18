@@ -24,7 +24,7 @@ public class ComputerPlayer {
     private final EPlayer player;
     private final SquareController squareController;
     private final TurnController turnController;
-    private final int maxProof = 5;
+    private final int maxProof = 6;
     private int numberOfCalculatedPositions;
 
     public ComputerPlayer(final EPlayer player) {
@@ -215,9 +215,9 @@ public class ComputerPlayer {
         final int numberOfConqueredBlackSquares = 10 * squareController.getNumberOfBlackConqueredSquares();
         final int numberOfConqueredWhiteSquares = 10 * squareController.getNumberOfWhiteConqueredSquares();
         if (winner == player) {
-            return 1000 + (EPlayer.BLACK == player ? numberOfConqueredBlackSquares : numberOfConqueredWhiteSquares);
+            return 100000 + (EPlayer.BLACK == player ? numberOfConqueredBlackSquares : numberOfConqueredWhiteSquares);
         } else if (winner != null) {
-            return -1000 + (EPlayer.BLACK == player ? numberOfConqueredWhiteSquares : numberOfConqueredBlackSquares);
+            return -100000 + (EPlayer.BLACK == player ? numberOfConqueredWhiteSquares : numberOfConqueredBlackSquares);
         }
 
         int cpuScore = 0;
@@ -231,11 +231,11 @@ public class ComputerPlayer {
                     cpuScore += numberOfAdjacentSquaresScore;
                     opponentScore += numberOfAdjacentSquaresScore;
                     if (player == EPlayer.BLACK) {
-                        cpuScore += 10 * currentSquare.numberOfBlackPawns;
-                        opponentScore += 10 * currentSquare.numberOfWhitePawns;
+                        cpuScore += (10 + row) * currentSquare.numberOfBlackPawns;
+                        opponentScore += (10 + row) * currentSquare.numberOfWhitePawns;
                     } else {
-                        cpuScore += 10 * currentSquare.numberOfWhitePawns;
-                        opponentScore += 10 * currentSquare.numberOfBlackPawns;
+                        cpuScore += (10 + row) * currentSquare.numberOfWhitePawns;
+                        opponentScore += (10 + row) * currentSquare.numberOfBlackPawns;
                     }
                 } else {
                     if (conqueringPlayer == player) {
