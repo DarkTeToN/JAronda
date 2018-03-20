@@ -6,11 +6,11 @@
 package com.evilinc.jaronda.ai;
 
 import com.evilinc.jaronda.enums.EPlayer;
-import com.evilinc.jaronda.controller.RuleController;
-import com.evilinc.jaronda.controller.SquareController;
-import com.evilinc.jaronda.controller.TurnController;
-import com.evilinc.jaronda.model.Move;
-import com.evilinc.jaronda.model.Square;
+import com.evilinc.jaronda.controller.game.RuleController;
+import com.evilinc.jaronda.controller.game.SquareController;
+import com.evilinc.jaronda.controller.game.TurnController;
+import com.evilinc.jaronda.model.game.Move;
+import com.evilinc.jaronda.model.game.Square;
 
 /**
  *
@@ -48,10 +48,12 @@ public class ComputerPlayer {
         for (int row = 0; row < gameBoard.length; row++) {
             for (int squareNumber = 0; squareNumber < gameBoard[row].length; squareNumber++) {
                 if (RuleController.isMoveLegal(squareController.getSquareAt(row, squareNumber), player)) {
+                    System.out.println("Playing: " + row + "-" + squareNumber);
                     final Move playedMove = squareController.playMoveAt(row, squareNumber, player);
                     turnController.playMove();
                     if (turnController.getCurrentPlayer() == player) {
                         temp = calculateMax(max, Integer.MAX_VALUE, maxProof - 1);
+                        System.out.println("calculateMax: " + temp);
                         if (temp > max) {
                             max = temp;
                             maxRow = row;
@@ -60,6 +62,7 @@ public class ComputerPlayer {
                         }
                     } else {
                         temp = calculateMin(min, Integer.MAX_VALUE, maxProof - 1);
+                        System.out.println("calculateMin: " + temp);
                         if (temp > min) {
                             min = temp;
                             maxRow = row;
@@ -67,12 +70,12 @@ public class ComputerPlayer {
                             borne = min;
                         }
                     }
+                    System.out.println("Cancelling: " + row + "-" + squareNumber);
                     turnController.cancelMove();
                     squareController.cancelMove(playedMove);
                 }
             }
         }
-        System.out.println("Evaluation: " + borne);
         final long endTime = System.currentTimeMillis();
         final long currentCalculationTime = endTime - startTime;
 //        if (currentCalculationTime < MIN_REFERENCE_CALCULATION_TIME) {
@@ -82,7 +85,7 @@ public class ComputerPlayer {
 //            maxProof--;
 //            System.out.println("Too long: decreasing maximum proof to " + maxProof);
 //        }
-        System.out.println(numberOfCalculatedPositions + " moves calculated in: " + (endTime - startTime) + "ms");
+        System.out.println(numberOfCalculatedPositions + " moves calculated in: " + currentCalculationTime + "ms");
         chosenMove[0] = maxRow;
         chosenMove[1] = maxSquareNumber;
         return chosenMove;
@@ -226,7 +229,7 @@ public class ComputerPlayer {
             for (int squareNumber = 0; squareNumber < squareController.squares[row].length; squareNumber++) {
                 final Square currentSquare = squareController.getSquareAt(row, squareNumber);
                 final EPlayer conqueringPlayer = currentSquare.getConqueringPlayer();
-                final int numberOfAdjacentSquaresScore = 10 * currentSquare.getAdjacentSquares().size();
+                final int numberOfAdjacentSquaresScore = -10 * currentSquare.getAdjacentSquares().size();
                 if (conqueringPlayer == null) {
                     cpuScore += numberOfAdjacentSquaresScore;
                     opponentScore += numberOfAdjacentSquaresScore;

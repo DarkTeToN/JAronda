@@ -3,20 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.evilinc.jaronda.model;
-
-import java.awt.Color;
+package com.evilinc.jaronda.exceptions;
 
 /**
  *
  * @author teton
  */
-public class Pawn {
-    protected final Color color;
-
-    public Pawn(final Color color) {
-        this.color = color;
-    }
+public class InvalidTextMoveException extends JArondaException {
     
+    public InvalidTextMoveException(String message) {
+        super("The following move is invalid: " + message);
+    }
     
 }

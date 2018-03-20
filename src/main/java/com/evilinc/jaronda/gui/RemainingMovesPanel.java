@@ -7,7 +7,9 @@ package com.evilinc.jaronda.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
@@ -16,15 +18,19 @@ import javax.swing.JPanel;
  */
 public class RemainingMovesPanel extends JPanel {
 
-    private static final int MARGIN = 5;
+    private static final int MARGIN = 15;
     private static final int CIRCLE_DIAMETER = 30;
     
     private int remainingMoves = 1;
     private Color color = Color.BLACK;
     private final Dimension size;
+    private final JLabel remainingMovesLabel;
     
     public RemainingMovesPanel() {
-        this.size = new Dimension(CIRCLE_DIAMETER + MARGIN, 2 * (CIRCLE_DIAMETER + MARGIN));
+        remainingMovesLabel = new JLabel("Remaining moves:");
+        remainingMovesLabel.setFont(remainingMovesLabel.getFont().deriveFont(Font.BOLD));
+        add(remainingMovesLabel);
+        this.size = new Dimension(2*(CIRCLE_DIAMETER + MARGIN), 2 * (CIRCLE_DIAMETER + MARGIN));
     }
 
     public void setRemainingMoves(final int remainingMoves, final Color color) {
@@ -38,15 +44,10 @@ public class RemainingMovesPanel extends JPanel {
         super.paint(g);
         for (int i = 0; i < remainingMoves; i++) {
             g.setColor(color);
-            g.fillOval(i*(CIRCLE_DIAMETER + MARGIN), MARGIN, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
+            g.fillOval(MARGIN + i*(CIRCLE_DIAMETER + MARGIN), CIRCLE_DIAMETER + MARGIN, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
             g.setColor(Color.BLACK);
-            g.drawOval(i*(CIRCLE_DIAMETER + MARGIN), MARGIN, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
+            g.drawOval(MARGIN + i*(CIRCLE_DIAMETER + MARGIN), CIRCLE_DIAMETER + MARGIN, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
         }
-    }
-
-    @Override
-    public Dimension getSize() {
-        return size;
     }
     
 }

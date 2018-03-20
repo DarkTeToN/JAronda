@@ -3,80 +3,43 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.evilinc.jaronda.model;
+package com.evilinc.jaronda.model.game;
 
 import com.evilinc.jaronda.enums.EPlayer;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 /**
  *
  * @author teton
  */
-public class Square {
+public class GuiSquare {
 
     private final int[] coordinates = new int[2];
-    private final List<Square> adjacentSquares;
     public int numberOfBlackPawns = 0;
     public int numberOfWhitePawns = 0;
     private final int necessaryPawnsToConquer;
     public EPlayer conqueringPlayer;
+    private final double leftLimitAngle;
+    private final double rightLimitAngle;
 
-    public Square(final int row, final int squareNumber, final int necessaryPawnsToConquer) {
-        this.adjacentSquares = new ArrayList<>();
+    public GuiSquare(final int row, final int squareNumber, final int necessaryPawnsToConquer, final double leftLimitAngle, final double rightLimitAngle) {
         this.coordinates[0] = row;
         this.coordinates[1] = squareNumber;
         this.necessaryPawnsToConquer = necessaryPawnsToConquer;
+        this.leftLimitAngle = leftLimitAngle;
+        this.rightLimitAngle = rightLimitAngle;
     }
 
-    public void setAdjacentSquares(final Collection<Square> adjacentSquares) {
-        this.adjacentSquares.clear();
-        this.adjacentSquares.addAll(adjacentSquares);
+    public double getLeftLimitAngle() {
+        return leftLimitAngle;
     }
 
-    public List<Square> getAdjacentSquares() {
-        return adjacentSquares;
+    public double getRightLimitAngle() {
+        return rightLimitAngle;
     }
 
     public int getNecessaryPawnsToConquer() {
         return necessaryPawnsToConquer;
-    }
-
-    public boolean containsPawnFromColor(final EPlayer colorToCheck) {
-        return (colorToCheck == conqueringPlayer) || (colorToCheck == EPlayer.BLACK ? numberOfBlackPawns > 0 : numberOfWhitePawns > 0);
-    }
-
-    public boolean isOnTheEdge() {
-        return coordinates[0] == 0;
-    }
-
-    public boolean addPawn(final EPlayer player) {
-        switch (player) {
-            case BLACK:
-                numberOfBlackPawns++;
-                break;
-            case WHITE:
-                numberOfWhitePawns++;
-            default:
-                break;
-        }
-        return updateConqueredStatus();
-    }
-
-    private boolean updateConqueredStatus() {
-        if (numberOfBlackPawns == necessaryPawnsToConquer) {
-            conqueringPlayer = EPlayer.BLACK;
-        } else if (numberOfWhitePawns == necessaryPawnsToConquer) {
-            conqueringPlayer = EPlayer.WHITE;
-        }
-
-        if (conqueringPlayer != null) {
-            resetPawns();
-            return true;
-        }
-        return false;
     }
 
     public int getNumberOfBlackPawns() {
@@ -98,7 +61,7 @@ public class Square {
     public EPlayer getConqueringPlayer() {
         return conqueringPlayer;
     }
-
+    
     public void setConqueringPlayer(final EPlayer conqueringPlayer) {
         this.conqueringPlayer = conqueringPlayer;
         resetPawns();
@@ -121,8 +84,8 @@ public class Square {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Square) {
-            final Square otherSquare = (Square) obj;
+        if (obj instanceof GuiSquare) {
+            final GuiSquare otherSquare = (GuiSquare) obj;
             return coordinates[0] == otherSquare.coordinates[0] && coordinates[1] == otherSquare.coordinates[1];
         }
         return false;

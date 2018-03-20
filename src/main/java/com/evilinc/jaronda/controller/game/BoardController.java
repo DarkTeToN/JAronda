@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.evilinc.jaronda.controller;
+package com.evilinc.jaronda.controller.game;
 
 import com.evilinc.jaronda.consts.MathsConstants;
 import com.evilinc.jaronda.gui.BoardPanel;
-import com.evilinc.jaronda.model.GuiSquare;
-import com.evilinc.jaronda.model.Square;
+import com.evilinc.jaronda.model.game.GuiSquare;
+import com.evilinc.jaronda.model.game.Square;
 import java.awt.Point;
 
 /**

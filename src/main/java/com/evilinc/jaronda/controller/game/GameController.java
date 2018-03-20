@@ -3,19 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.evilinc.jaronda.controller;
+package com.evilinc.jaronda.controller.game;
 
 import com.evilinc.jaronda.ai.ComputerPlayer;
 import com.evilinc.jaronda.enums.EPlayer;
 import com.evilinc.jaronda.enums.EPlayerType;
 import com.evilinc.jaronda.exceptions.IllegalMoveException;
 import com.evilinc.jaronda.gui.BoardPanel;
+import com.evilinc.jaronda.gui.JArondaMenuBar;
 import com.evilinc.jaronda.gui.RemainingMovesPanel;
 import com.evilinc.jaronda.interfaces.IGameController;
-import com.evilinc.jaronda.model.Board;
-import com.evilinc.jaronda.model.Move;
-import com.evilinc.jaronda.model.JsonSquare;
-import com.evilinc.jaronda.model.Square;
+import com.evilinc.jaronda.model.game.Board;
+import com.evilinc.jaronda.model.game.Move;
+import com.evilinc.jaronda.model.serialization.JsonSquare;
+import com.evilinc.jaronda.model.game.Square;
+import com.evilinc.jaronda.model.serialization.TextMove;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -41,18 +43,19 @@ public class GameController implements IGameController {
     private final SquareController squareController;
     private final Stack<Move> playedMoves;
     private final TurnController turnController;
-    private final ComputerPlayer cpuPlayer;
+    private ComputerPlayer cpuPlayer;
     private BoardController boardController;
     private BoardPanel boardPanel;
     private RemainingMovesPanel remainingMovesPanel;
-    private Action cancelAction;
+    private final JArondaMenuBar menuBar;
 
     public GameController() {
         playedMoves = new Stack<>();
         squareController = new SquareController();
         turnController = new TurnController();
         cpuPlayer = new ComputerPlayer(EPlayer.WHITE);
-        getCancelAction().setEnabled(false);
+        menuBar = JArondaMenuBar.getInstance();
+        menuBar.getCancelLastMoveAction().setEnabled(false);
     }
 
     public void setRemainingMovesPanel(RemainingMovesPanel remainingMovesPanel) {
@@ -66,7 +69,7 @@ public class GameController implements IGameController {
         if (remainingMovesPanel != null) {
             remainingMovesPanel.setRemainingMoves(turnController.getRemainingMoves(), turnController.getCurrentPlayer().getColor());
         }
-        getCancelAction().setEnabled(!playedMoves.empty());
+        menuBar.getCancelLastMoveAction().setEnabled(!playedMoves.empty());
     }
 
     public void setBoardPanel(BoardPanel boardPanel) {
@@ -109,7 +112,7 @@ public class GameController implements IGameController {
                 if (boardPanel != null) {
                     boardPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 }
-                getCancelAction().setEnabled(true);
+                menuBar.getCancelLastMoveAction().setEnabled(true);
             }
         } catch (IllegalMoveException ex) {
             Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
@@ -117,7 +120,7 @@ public class GameController implements IGameController {
     }
 
     private void playCpuMove() throws IllegalMoveException {
-        getCancelAction().setEnabled(false);
+        menuBar.getCancelLastMoveAction().setEnabled(false);
         if (!RuleController.isGameFinished(squareController, turnController.getCurrentPlayer())) {
             final CpuMoveWorker worker = new CpuMoveWorker();
             worker.execute();
@@ -147,18 +150,6 @@ public class GameController implements IGameController {
         }
     }
 
-    public final Action getCancelAction() {
-        if (cancelAction == null) {
-            cancelAction = new AbstractAction("Cancel last move") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    cancelLastMove();
-                }
-            };
-        }
-        return cancelAction;
-    }
-
     private boolean isPlayedSquareValid(final int[] playedSquare) {
         return playedSquare[0] > -1 && playedSquare[1] > -1;
     }
@@ -169,10 +160,19 @@ public class GameController implements IGameController {
         boardController.updateBoardPanel(squareController.getSquares());
         turnController.reset();
         playedMoves.clear();
+        if (turnController.getCurrentPlayer().playerType == EPlayerType.CPU) {
+            cpuPlayer = new ComputerPlayer(turnController.getCurrentPlayer());
+            try {
+                playCpuMove();
+            } catch (IllegalMoveException ex) {
+                Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         updateDisplay();
     }
 
     public void playMoveAt(final int row, final int squareNumber) throws IllegalMoveException {
+//        System.out.println("Playing: " + row + "-" + squareNumber);
         final Square playedSquare = squareController.getSquareAt(row, squareNumber);
         RuleController.checkMoveValidity(playedSquare, turnController.getCurrentPlayer());
         final Move playedMove = squareController.playMoveAt(row, squareNumber, turnController.getCurrentPlayer());
@@ -186,6 +186,7 @@ public class GameController implements IGameController {
         }
     }
 
+    @Override
     public void cancelLastMove() {
         final Move lastPlayedMove = playedMoves.pop();
         squareController.cancelMove(lastPlayedMove);
@@ -231,5 +232,11 @@ public class GameController implements IGameController {
             squares.add(new JsonSquare(currentSquare));
         });
         return squares;
+    }
+
+    public void loadGame(final List<TextMove> movesToPlay) throws IllegalMoveException {
+        for (final TextMove currentMove : movesToPlay) {
+            playMoveAt(currentMove.row, currentMove.column);
+        }
     }
 }

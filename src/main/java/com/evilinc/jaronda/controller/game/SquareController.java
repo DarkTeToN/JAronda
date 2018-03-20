@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.evilinc.jaronda.controller;
+package com.evilinc.jaronda.controller.game;
 
 import com.evilinc.jaronda.enums.EPlayer;
-import com.evilinc.jaronda.model.Move;
-import com.evilinc.jaronda.model.JsonSquare;
-import com.evilinc.jaronda.model.Square;
+import com.evilinc.jaronda.model.game.Move;
+import com.evilinc.jaronda.model.serialization.JsonSquare;
+import com.evilinc.jaronda.model.game.Square;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;

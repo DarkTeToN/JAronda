@@ -3,16 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.evilinc.jaronda.interfaces;
+package com.evilinc.jaronda.model.game;
+
+import java.awt.Color;
 
 /**
  *
  * @author teton
  */
-public interface IGameController {
+public class Pawn {
+    protected final Color color;
+
+    public Pawn(final Color color) {
+        this.color = color;
+    }
     
-    public void startNewGame();
-    
-    public void cancelLastMove();
     
 }

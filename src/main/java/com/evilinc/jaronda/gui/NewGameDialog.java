@@ -25,8 +25,9 @@ import javax.swing.JRadioButton;
 public class NewGameDialog extends JDialog {
 
     private final JLabel messagelabel = new JLabel("New game:");
-    private final JRadioButton manVsCpuRadioButton = new JRadioButton("Human VS CPU");
-    private final JRadioButton manVsManRadioButton = new JRadioButton("Human VS Human");
+    private final JRadioButton playAsBlackRadioButton = new JRadioButton("Play as Black");
+    private final JRadioButton playAsWhiteRadioButton = new JRadioButton("Play as White");
+    private final JRadioButton analysisModeRadioButton = new JRadioButton("Human VS Human (Analysis mode)");
     private final ButtonGroup buttonGroup = new ButtonGroup();
     private final JButton cancelButton = new JButton("Cancel");
     private final JButton okButton = new JButton("OK");
@@ -43,8 +44,10 @@ public class NewGameDialog extends JDialog {
     }
 
     private void initComponents() {
-        buttonGroup.add(manVsCpuRadioButton);
-        buttonGroup.add(manVsManRadioButton);
+        buttonGroup.add(playAsBlackRadioButton);
+        buttonGroup.add(analysisModeRadioButton);
+        buttonGroup.add(playAsWhiteRadioButton);
+        analysisModeRadioButton.setSelected(true);
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -66,14 +69,16 @@ public class NewGameDialog extends JDialog {
         constraints.gridy = 0;
         constraints.gridwidth = 3;
         constraints.fill = GridBagConstraints.NONE;
-        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.anchor = GridBagConstraints.LINE_START;
         constraints.weightx = 1;
         constraints.weighty = 0;
         getContentPane().add(messagelabel, constraints);
         constraints.gridy++;
-        getContentPane().add(manVsCpuRadioButton, constraints);
+        getContentPane().add(playAsBlackRadioButton, constraints);
         constraints.gridy++;
-        getContentPane().add(manVsManRadioButton, constraints);
+        getContentPane().add(playAsWhiteRadioButton, constraints);
+        constraints.gridy++;
+        getContentPane().add(analysisModeRadioButton, constraints);
         constraints.gridx++;
         constraints.gridy++;
         constraints.gridwidth = 1;
@@ -82,12 +87,17 @@ public class NewGameDialog extends JDialog {
         getContentPane().add(okButton, constraints);
         pack();
     }
-    
+
     private void updateUserChoice() {
-        if (manVsCpuRadioButton.isSelected()) {
+        if (playAsBlackRadioButton.isSelected()) {
             EPlayer.WHITE.playerType = EPlayerType.CPU;
+            EPlayer.BLACK.playerType = EPlayerType.HUMAN;
+        } else if (playAsWhiteRadioButton.isSelected()) {
+            EPlayer.BLACK.playerType = EPlayerType.CPU;
+            EPlayer.WHITE.playerType = EPlayerType.HUMAN;
         } else {
             EPlayer.WHITE.playerType = EPlayerType.HUMAN;
+            EPlayer.BLACK.playerType = EPlayerType.HUMAN;
         }
     }
 

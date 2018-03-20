@@ -6,12 +6,17 @@
 package com.evilinc.jaronda;
 
 import com.evilinc.jaronda.consts.SystemConst;
-import com.evilinc.jaronda.controller.GameController;
+import com.evilinc.jaronda.controller.game.GameController;
 import com.evilinc.jaronda.exceptions.IllegalMoveException;
+import com.evilinc.jaronda.gui.JArondaMenuBar;
 import com.evilinc.jaronda.gui.MainFrame;
-import com.evilinc.jaronda.model.Board;
+import com.evilinc.jaronda.model.game.Board;
 import com.google.gson.Gson;
 import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
@@ -62,6 +67,12 @@ public class JAronda {
     }
 
     private static void initializeGui() {
+        try {
+            // select the Look and Feel
+            UIManager.setLookAndFeel("com.jtattoo.plaf.mint.MintLookAndFeel");
+        } catch (Exception ex) {
+            Logger.getLogger(JAronda.class.getName()).log(Level.SEVERE, null, ex);
+        }
         mainFrame = new MainFrame();
     }
 
@@ -78,8 +89,7 @@ public class JAronda {
     private static void initializeGraphicalControllers() {
         gameController.setBoardPanel(mainFrame.getBoardPanel());
         gameController.setRemainingMovesPanel(mainFrame.getRemainingMovesPanel());
-        mainFrame.setCancelAction(gameController.getCancelAction());
-        mainFrame.setGameController(gameController);
+        JArondaMenuBar.getInstance().setGameController(gameController);
     }
 
     private static void launchJAronda() {

@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.evilinc.jaronda.model;
+package com.evilinc.jaronda.model.serialization;
+
+import com.evilinc.jaronda.model.game.Square;
 
 /**
  *

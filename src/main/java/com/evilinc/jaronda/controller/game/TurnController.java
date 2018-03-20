@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.evilinc.jaronda.controller;
+package com.evilinc.jaronda.controller.game;
 
 import com.evilinc.jaronda.enums.EPlayer;
 
@@ -29,7 +29,7 @@ public class TurnController {
     }
 
     public void cancelMove() {
-        moveNumber--;
+        moveNumber = Math.max(moveNumber - 1, 0);
     }
 
     public EPlayer getCurrentPlayer() {

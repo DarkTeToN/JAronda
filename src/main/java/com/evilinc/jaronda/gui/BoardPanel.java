@@ -5,7 +5,7 @@
  */
 package com.evilinc.jaronda.gui;
 
-import com.evilinc.jaronda.model.GuiSquare;
+import com.evilinc.jaronda.model.game.GuiSquare;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
