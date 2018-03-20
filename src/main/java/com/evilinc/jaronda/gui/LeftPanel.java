@@ -6,8 +6,6 @@
 package com.evilinc.jaronda.gui;
 
 import java.awt.GridLayout;
-import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
