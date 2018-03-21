@@ -55,7 +55,7 @@ public class BoardController {
         return getSquareFromBoardCoordinates(getBoardCoordinatesFromPanelCoordinates(clickedPoint));
     }
 
-    public void updateBoardPanel(Square[][] squares) {
+    public void updateBoardPanel(Square[][] squares, final Square lastPlayedSquare) {
         for (int row = 0; row < squares.length; row++) {
             for (int squareNumber = 0; squareNumber < squares[row].length; squareNumber++) {
                 final Square currentSquare = squares[row][squareNumber];
@@ -63,6 +63,9 @@ public class BoardController {
                 currentGuiSquare.conqueringPlayer = currentSquare.conqueringPlayer;
                 currentGuiSquare.numberOfBlackPawns = currentSquare.numberOfBlackPawns;
                 currentGuiSquare.numberOfWhitePawns = currentSquare.numberOfWhitePawns;
+                currentGuiSquare.isLastPlayedMove = (lastPlayedSquare != null && 
+                        lastPlayedSquare.getRow() == row && 
+                        lastPlayedSquare.getSquareNumber() == squareNumber);
             }
         }
         boardPanel.setSquaresToDraw(guiSquares);

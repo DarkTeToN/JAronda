@@ -21,6 +21,7 @@ public class GuiSquare {
     public EPlayer conqueringPlayer;
     private final double leftLimitAngle;
     private final double rightLimitAngle;
+    public boolean isLastPlayedMove;
 
     public GuiSquare(final int row, final int squareNumber, final int necessaryPawnsToConquer, final double leftLimitAngle, final double rightLimitAngle) {
         this.coordinates[0] = row;

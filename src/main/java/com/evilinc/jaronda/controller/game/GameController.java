@@ -61,7 +61,7 @@ public class GameController implements IGameController {
 
     private void updateDisplay() {
         if (boardController != null) {
-            boardController.updateBoardPanel(squareController.getSquares());
+            boardController.updateBoardPanel(squareController.getSquares(), squareController.getLastPlayedSquare());
         }
         if (remainingMovesPanel != null) {
             remainingMovesPanel.setRemainingMoves(turnController.getRemainingMoves(), turnController.getCurrentPlayer().getColor());
@@ -154,7 +154,7 @@ public class GameController implements IGameController {
     @Override
     public void startNewGame() {
         squareController.reset();
-        boardController.updateBoardPanel(squareController.getSquares());
+        boardController.updateBoardPanel(squareController.getSquares(), squareController.getLastPlayedSquare());
         turnController.reset();
         playedMoves.clear();
         if (turnController.getCurrentPlayer().playerType == EPlayerType.CPU) {

@@ -24,7 +24,7 @@ public class ComputerPlayer {
     private final EPlayer player;
     private final SquareController squareController;
     private final TurnController turnController;
-    private final int maxProof = 6;
+    private final int maxProof = 5;
     private int numberOfCalculatedPositions;
 
     public ComputerPlayer(final EPlayer player) {

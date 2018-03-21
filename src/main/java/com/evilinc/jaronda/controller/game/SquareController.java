@@ -26,6 +26,7 @@ public class SquareController {
     public Square[][] squares;
     private int numberOfBlackConqueredSquares = 0;
     private int numberOfWhiteConqueredSquares = 0;
+    private Square lastPlayedSquare;
 
     public SquareController() {
         squares = new Square[4][];
@@ -148,9 +149,9 @@ public class SquareController {
     }
 
     public Move playMoveAt(final int row, final int squareNumber, final EPlayer currentPlayer) {
-        final Square playedSquare = squares[row][squareNumber];
-        final JsonSquare currentSquareBeforeMove = new JsonSquare(playedSquare);
-        boolean isConquered = playedSquare.addPawn(currentPlayer);
+        lastPlayedSquare = squares[row][squareNumber];
+        final JsonSquare currentSquareBeforeMove = new JsonSquare(lastPlayedSquare);
+        boolean isConquered = lastPlayedSquare.addPawn(currentPlayer);
         final List<JsonSquare> newlyConqueredSquares = updateConqueredStatus();
         if (isConquered) {
             newlyConqueredSquares.add(currentSquareBeforeMove);
@@ -184,6 +185,10 @@ public class SquareController {
 
     public int getNumberOfWhiteConqueredSquares() {
         return numberOfWhiteConqueredSquares;
+    }
+
+    public Square getLastPlayedSquare() {
+        return lastPlayedSquare;
     }
 
     private List<JsonSquare> updateConqueredStatus() {

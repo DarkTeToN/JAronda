@@ -361,6 +361,12 @@ public class BoardPanel extends JPanel {
             g.drawOval((int) xCoordinate,
                     (int) yCoordinate,
                     smallPawnDiameter, smallPawnDiameter);
+//            if (squareToDraw.isLastPlayedMove) {
+//                g.setColor(Color.RED);
+//                g.fillOval((int) xCoordinate + smallPawnDiameter / 4,
+//                        (int) yCoordinate + smallPawnDiameter / 4,
+//                        smallPawnDiameter / 2, smallPawnDiameter / 2);
+//            }
         }
     }
 
@@ -381,6 +387,12 @@ public class BoardPanel extends JPanel {
         g.drawOval((int) xCoordinate,
                 (int) yCoordinate,
                 conqueredDotDiameter, conqueredDotDiameter);
+//        if (squareToDraw.isLastPlayedMove) {
+//            g.setColor(Color.RED);
+//            g.fillOval((int) xCoordinate + conqueredDotDiameter / 4,
+//                    (int) yCoordinate + conqueredDotDiameter / 4,
+//                    conqueredDotDiameter / 2, conqueredDotDiameter / 2);
+//        }
     }
 
     public int getBoardCenterXCoordinate() {
@@ -399,4 +411,5 @@ public class BoardPanel extends JPanel {
         this.squaresToDraw = squaresToDraw;
         repaint();
     }
+
 }
