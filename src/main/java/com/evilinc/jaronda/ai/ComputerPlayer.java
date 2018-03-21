@@ -242,9 +242,9 @@ public class ComputerPlayer {
                     }
                 } else {
                     if (conqueringPlayer == player) {
-                        cpuScore += (numberOfAdjacentSquaresScore + 10 * currentSquare.getNecessaryPawnsToConquer());
+                        cpuScore += ((10 + row - 3) * currentSquare.getNecessaryPawnsToConquer());
                     } else {
-                        opponentScore += (numberOfAdjacentSquaresScore + 10 * currentSquare.getNecessaryPawnsToConquer());
+                        opponentScore += ((10 + row - 3) * currentSquare.getNecessaryPawnsToConquer());
                     }
                 }
             }
