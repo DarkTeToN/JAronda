@@ -5,14 +5,18 @@
  */
 package com.evilinc.jaronda;
 
+import com.evilinc.jaronda.consts.HttpConst;
 import com.evilinc.jaronda.consts.SystemConst;
 import com.evilinc.jaronda.controller.game.GameController;
-import com.evilinc.jaronda.exceptions.IllegalMoveException;
+import com.evilinc.jaronda.controller.http.GetBoardHttpHandler;
+import com.evilinc.jaronda.controller.http.PlayMoveHttpHandler;
+import com.evilinc.jaronda.controller.http.StartNewGameHandler;
+import com.evilinc.jaronda.enums.EHttpHandler;
 import com.evilinc.jaronda.gui.JArondaMenuBar;
 import com.evilinc.jaronda.gui.MainFrame;
-import com.evilinc.jaronda.model.game.Board;
-import com.google.gson.Gson;
-import java.io.FileNotFoundException;
+import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.UIManager;
@@ -30,33 +34,21 @@ public class JAronda {
      * @param args the command line arguments
      * @throws java.io.FileNotFoundException
      */
-    public static void main(String[] args) throws FileNotFoundException {
-        if (args.length > 0) {
-            launchJArondaInConsoleMode(args);
+    public static void main(String[] args) throws IOException {
+        if (isAjpMode()) {
+            launchJArondaInConsoleMode();
         } else {
             launchJArondaInGuiMode();
         }
     }
+    
+    private static boolean isAjpMode() {
+        return Boolean.parseBoolean(System.getProperty(SystemConst.AJP_MODE));
+    }
 
-    private static void launchJArondaInConsoleMode(String[] args) throws FileNotFoundException {
-        if (args.length != 1) {
-            System.exit(SystemConst.BAD_NUMBER_OF_ARGUMENTS_EXIT_STATUS);
-        }
+    private static void launchJArondaInConsoleMode() throws IOException {
         initializeGameControllers();
-        final Gson gson = new Gson();
-        final String argValue = args[0];
-        if ("print".equals(argValue)) {
-            final Board currentBoard = gameController.getCurrentBoard();
-            System.out.println(gson.toJson(currentBoard));
-        } else {
-            Board board = gson.fromJson(argValue, Board.class);
-            try {
-                board = gameController.playMove(board);
-            } catch (IllegalMoveException ex) {
-                board.validMove = false;
-            }
-            System.out.println(gson.toJson(board));
-        }
+        launchArondaHttpServer();
     }
 
     private static void launchJArondaInGuiMode() {
@@ -93,6 +85,17 @@ public class JAronda {
 
     private static void launchJAronda() {
         mainFrame.setVisible(true);
+    }
+
+    private static void launchArondaHttpServer() throws IOException {
+        System.out.println("Starting JAronda in Aronda JSON Protocol communication mode...");
+        System.out.println(String.format("Listening on port: %d", HttpConst.WEB_SERVER_PORT));
+        HttpServer server = HttpServer.create(new InetSocketAddress(HttpConst.WEB_SERVER_PORT), 0);
+        server.createContext(EHttpHandler.START_NEW_GAME.getContext(), new StartNewGameHandler(gameController));
+        server.createContext(EHttpHandler.GET_BOARD.getContext(), new GetBoardHttpHandler(gameController));
+        server.createContext(EHttpHandler.PLAY_MOVE.getContext(), new PlayMoveHttpHandler(gameController));
+        server.setExecutor(null); // creates a default executor
+        server.start();
     }
 
 }

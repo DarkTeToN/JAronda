@@ -2,3 +2,6 @@
 /target/
 /nbactions.xml
 /nbproject/
+/nb-configuration.xml
+/nbactions-gui.xml
+/nbactions-ajp.xml

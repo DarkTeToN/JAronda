@@ -13,7 +13,7 @@ import com.evilinc.jaronda.gui.BoardPanel;
 import com.evilinc.jaronda.gui.JArondaMenuBar;
 import com.evilinc.jaronda.gui.RemainingMovesPanel;
 import com.evilinc.jaronda.interfaces.IGameController;
-import com.evilinc.jaronda.model.game.Board;
+import com.evilinc.jaronda.model.serialization.JsonBoard;
 import com.evilinc.jaronda.model.game.Move;
 import com.evilinc.jaronda.model.serialization.JsonSquare;
 import com.evilinc.jaronda.model.game.Square;
@@ -154,7 +154,6 @@ public class GameController implements IGameController {
     @Override
     public void startNewGame() {
         squareController.reset();
-        boardController.updateBoardPanel(squareController.getSquares(), squareController.getLastPlayedSquare());
         turnController.reset();
         playedMoves.clear();
         if (turnController.getCurrentPlayer().playerType == EPlayerType.CPU) {
@@ -169,7 +168,6 @@ public class GameController implements IGameController {
     }
 
     public void playMoveAt(final int row, final int squareNumber) throws IllegalMoveException {
-//        System.out.println("Playing: " + row + "-" + squareNumber);
         final Square playedSquare = squareController.getSquareAt(row, squareNumber);
         RuleController.checkMoveValidity(playedSquare, turnController.getCurrentPlayer());
         final Move playedMove = squareController.playMoveAt(row, squareNumber, turnController.getCurrentPlayer());
@@ -192,8 +190,8 @@ public class GameController implements IGameController {
 
     }
 
-    public Board getCurrentBoard() {
-        final Board currentBoard = new Board();
+    public JsonBoard getCurrentBoard() {
+        final JsonBoard currentBoard = new JsonBoard();
         currentBoard.squares = getSimpleSquareList();
         currentBoard.currentPlayer = turnController.getCurrentPlayer().name();
         currentBoard.winner = String.valueOf(RuleController.getWinner(squareController, turnController));
@@ -201,26 +199,6 @@ public class GameController implements IGameController {
         currentBoard.blackScore = squareController.getNumberOfBlackConqueredSquares();
         currentBoard.whiteScore = squareController.getNumberOfWhiteConqueredSquares();
         return currentBoard;
-    }
-
-    public Board playMove(final Board boardBeforeMove) throws IllegalMoveException {
-        // TODO: Change the JSON interface to put the number of move played from the beginning instead
-        updateSquareListFromSimpleSquareList(boardBeforeMove.squares);
-//        currentPlayer = EPlayer.fromString(boardBeforeMove.currentPlayer);
-//        numberOfMovesToPlay = boardBeforeMove.remainingMoves;
-        playMoveAt(boardBeforeMove.moveRow, boardBeforeMove.moveSquareNumber);
-        final Board boardAfterMove = getCurrentBoard();
-        boardAfterMove.validMove = true;
-        return boardAfterMove;
-    }
-
-    private void updateSquareListFromSimpleSquareList(final List<JsonSquare> simpleSquares) {
-        simpleSquares.forEach((simpleSquare) -> {
-            final Square square = squareController.getSquareAt(simpleSquare.row, simpleSquare.squareNumber);
-            square.conqueringPlayer = EPlayer.fromString(simpleSquare.conqueringColor);
-            square.numberOfBlackPawns = simpleSquare.numberOfBlackPawns;
-            square.numberOfWhitePawns = simpleSquare.numberOfWhitePawns;
-        });
     }
 
     private List<JsonSquare> getSimpleSquareList() {

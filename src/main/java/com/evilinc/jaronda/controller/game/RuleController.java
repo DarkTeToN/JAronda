@@ -28,7 +28,7 @@ public class RuleController {
 
     public static void checkMoveValidity(final Square square, final EPlayer playerToCheck) throws IllegalMoveException {
         if (isConquered(square)) {
-            throw new IllegalMoveException("This square is already conquered. It's not possible to play here: " + square.getRow() + "," + square.getSquareNumber());
+            throw new IllegalMoveException(String.format("Illegal move: The square %d,%d is already conquered.", square.getRow(), square.getSquareNumber()));
         }
 
         if (!square.isOnTheEdge()) {
@@ -42,7 +42,7 @@ public class RuleController {
                 }
             }
             if (!connected) {
-                throw new IllegalMoveException("This square is not connected to the edge.");
+                throw new IllegalMoveException(String.format("Illegal move: The square %d,%d has no connexion to the edge.", square.getRow(), square.getSquareNumber()));
             }
         }
     }
