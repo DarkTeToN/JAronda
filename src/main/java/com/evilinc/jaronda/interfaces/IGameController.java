@@ -5,6 +5,8 @@
  */
 package com.evilinc.jaronda.interfaces;
 
+import java.io.File;
+
 /**
  *
  * @author teton
@@ -14,5 +16,9 @@ public interface IGameController {
     public void startNewGame();
     
     public void cancelLastMove();
+    
+    public void saveGame(final File outputFile);
+    
+    public void loadGame();
     
 }

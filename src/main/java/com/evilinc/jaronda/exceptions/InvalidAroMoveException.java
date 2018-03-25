@@ -9,9 +9,9 @@ package com.evilinc.jaronda.exceptions;
  *
  * @author teton
  */
-public class InvalidTextMoveException extends JArondaException {
+public class InvalidAroMoveException extends JArondaException {
     
-    public InvalidTextMoveException(String message) {
+    public InvalidAroMoveException(String message) {
         super("The following move is invalid: " + message);
     }
     

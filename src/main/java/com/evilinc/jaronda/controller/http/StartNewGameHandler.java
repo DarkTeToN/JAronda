@@ -7,7 +7,7 @@ package com.evilinc.jaronda.controller.http;
 
 import com.evilinc.jaronda.consts.HttpConst;
 import com.evilinc.jaronda.controller.game.GameController;
-import com.evilinc.jaronda.model.serialization.JsonBoard;
+import com.evilinc.jaronda.model.serialization.json.JsonBoard;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;

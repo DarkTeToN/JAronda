@@ -6,7 +6,7 @@
 package com.evilinc.jaronda.model.game;
 
 import com.evilinc.jaronda.enums.EPlayer;
-import com.evilinc.jaronda.model.serialization.JsonSquare;
+import com.evilinc.jaronda.model.serialization.json.JsonSquare;
 import java.util.List;
 
 /**

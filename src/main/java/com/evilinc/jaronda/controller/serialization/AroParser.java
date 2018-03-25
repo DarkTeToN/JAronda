@@ -5,10 +5,11 @@
  */
 package com.evilinc.jaronda.controller.serialization;
 
-import com.evilinc.jaronda.exceptions.InvalidTextMoveException;
-import com.evilinc.jaronda.model.serialization.TextMove;
+import com.evilinc.jaronda.exceptions.InvalidAroMoveException;
+import com.evilinc.jaronda.model.serialization.aro.AroMove;
 import com.evilinc.jaronda.utils.FileUtils;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,21 +20,31 @@ import java.util.List;
  */
 public class AroParser {
 
-    private final File fileToParse;
-    
+    private final File file;
+
     public AroParser(final File fileToParse) {
-        this.fileToParse =fileToParse;
+        this.file = fileToParse;
     }
-    
-    
-    public List<TextMove> parse() throws IOException, InvalidTextMoveException {
-        final List<TextMove> movesList = new ArrayList<>();
-        final String fileContent = FileUtils.getTextFileAsString(fileToParse);
+
+    public List<AroMove> parse() throws IOException, InvalidAroMoveException {
+        final List<AroMove> movesList = new ArrayList<>();
+        final String fileContent = FileUtils.getTextFileAsString(file);
         final String[] moves = fileContent.split(";");
         for (final String currentMove : moves) {
-            movesList.add(new TextMove(currentMove.trim()));
+            movesList.add(new AroMove(currentMove.trim()));
         }
         return movesList;
     }
-    
+
+    public void writeToFile(final List<AroMove> gameMoves) throws IOException {
+        final StringBuilder outputContentBuilder = new StringBuilder();
+        final FileWriter outputFileWriter = new FileWriter(file, false);
+        for (final AroMove currentMove : gameMoves) {
+            outputContentBuilder.append(currentMove).append(";");
+        }
+        outputContentBuilder.setLength(outputContentBuilder.length() - 1);
+        outputFileWriter.write(outputContentBuilder.toString());
+        outputFileWriter.flush();
+    }
+
 }

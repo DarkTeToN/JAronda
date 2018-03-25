@@ -6,6 +6,7 @@
 package com.evilinc.jaronda.controller.game;
 
 import com.evilinc.jaronda.ai.ComputerPlayer;
+import com.evilinc.jaronda.controller.serialization.AroParser;
 import com.evilinc.jaronda.enums.EPlayer;
 import com.evilinc.jaronda.enums.EPlayerType;
 import com.evilinc.jaronda.exceptions.IllegalMoveException;
@@ -13,14 +14,16 @@ import com.evilinc.jaronda.gui.BoardPanel;
 import com.evilinc.jaronda.gui.JArondaMenuBar;
 import com.evilinc.jaronda.gui.RemainingMovesPanel;
 import com.evilinc.jaronda.interfaces.IGameController;
-import com.evilinc.jaronda.model.serialization.JsonBoard;
+import com.evilinc.jaronda.model.serialization.json.JsonBoard;
 import com.evilinc.jaronda.model.game.Move;
-import com.evilinc.jaronda.model.serialization.JsonSquare;
+import com.evilinc.jaronda.model.serialization.json.JsonSquare;
 import com.evilinc.jaronda.model.game.Square;
-import com.evilinc.jaronda.model.serialization.TextMove;
+import com.evilinc.jaronda.model.serialization.aro.AroMove;
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -127,6 +130,26 @@ public class GameController implements IGameController {
         }
     }
 
+    @Override
+    public void saveGame(final File outputFile) {
+        final List<Move> movesList = new ArrayList<>(playedMoves);
+        AroParser parser = new AroParser(outputFile);
+        List<AroMove> aroMoves = new ArrayList();
+        for (final Move currentMove : movesList) {
+            aroMoves.add(new AroMove(currentMove));
+        }
+        try {
+            parser.writeToFile(aroMoves);
+        } catch (IOException ex) {
+            Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void loadGame() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     private class CpuMoveWorker extends SwingWorker<int[], Void> {
 
         @Override
@@ -209,9 +232,9 @@ public class GameController implements IGameController {
         return squares;
     }
 
-    public void loadGame(final List<TextMove> movesToPlay) throws IllegalMoveException {
-        for (final TextMove currentMove : movesToPlay) {
-            playMoveAt(currentMove.row, currentMove.column);
+    public void loadGame(final List<AroMove> movesToPlay) throws IllegalMoveException {
+        for (final AroMove currentMove : movesToPlay) {
+            playMoveAt(currentMove.row, currentMove.squareNumber);
         }
     }
 }
