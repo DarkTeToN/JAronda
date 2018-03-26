@@ -19,6 +19,6 @@ public interface IGameController {
     
     public void saveGame(final File outputFile);
     
-    public void loadGame();
+    public void loadGame(final File inputFile);
     
 }

@@ -9,10 +9,13 @@ import com.evilinc.jaronda.ai.ComputerPlayer;
 import com.evilinc.jaronda.controller.serialization.AroParser;
 import com.evilinc.jaronda.enums.EPlayer;
 import com.evilinc.jaronda.enums.EPlayerType;
+import com.evilinc.jaronda.enums.ESerializatonType;
 import com.evilinc.jaronda.exceptions.IllegalMoveException;
+import com.evilinc.jaronda.exceptions.InvalidAroMoveException;
 import com.evilinc.jaronda.gui.BoardPanel;
 import com.evilinc.jaronda.gui.JArondaMenuBar;
 import com.evilinc.jaronda.gui.RemainingMovesPanel;
+import com.evilinc.jaronda.interfaces.IFileParser;
 import com.evilinc.jaronda.interfaces.IGameController;
 import com.evilinc.jaronda.model.serialization.json.JsonBoard;
 import com.evilinc.jaronda.model.game.Move;
@@ -133,21 +136,39 @@ public class GameController implements IGameController {
     @Override
     public void saveGame(final File outputFile) {
         final List<Move> movesList = new ArrayList<>(playedMoves);
-        AroParser parser = new AroParser(outputFile);
+        IFileParser parser = ESerializatonType.ARO.getParser();
         List<AroMove> aroMoves = new ArrayList();
         for (final Move currentMove : movesList) {
             aroMoves.add(new AroMove(currentMove));
         }
         try {
-            parser.writeToFile(aroMoves);
+            parser.serialize(outputFile, aroMoves);
         } catch (IOException ex) {
             Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public void loadGame() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void loadGame(final File inputFile) {
+        final IFileParser parser = ESerializatonType.getParserFromFile(inputFile);
+        try {
+            final List<AroMove> movesToLoad = parser.parse(inputFile);
+            for (final AroMove currentMove : movesToLoad) {
+                final Square playedSquare = squareController.getSquareAt(currentMove.row, currentMove.squareNumber);
+                RuleController.checkMoveValidity(playedSquare, turnController.getCurrentPlayer());
+                final Move playedMove = squareController.playMoveAt(currentMove.row, currentMove.squareNumber, turnController.getCurrentPlayer());
+                playedMoves.push(playedMove);
+                turnController.playMove();
+                final EPlayer winner = RuleController.getWinner(squareController, turnController);
+
+                if (winner != null) {
+                    JOptionPane.showMessageDialog(null, winner.name() + " wins !", "End of the game", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+            updateDisplay();
+        } catch (IOException | InvalidAroMoveException | IllegalMoveException ex) {
+            Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private class CpuMoveWorker extends SwingWorker<int[], Void> {

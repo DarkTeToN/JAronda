@@ -59,6 +59,7 @@ public class JArondaMenuBar extends JMenuBar {
         fileMenu.addSeparator();
         fileMenu.add(getLoadGameAction());
         fileMenu.add(getSaveGameAction());
+        fileMenu.addSeparator();
         fileMenu.add(getExitAction());
         return fileMenu;
     }
@@ -82,7 +83,12 @@ public class JArondaMenuBar extends JMenuBar {
         final Action loadGameAction = new AbstractAction("Load game") {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                System.exit(0);
+                JFileChooser aroFileChooser = new JFileChooser();
+                aroFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                final int result = aroFileChooser.showOpenDialog(JArondaMenuBar.this);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    gameController.loadGame(aroFileChooser.getSelectedFile());
+                }
             }
         };
         return loadGameAction;

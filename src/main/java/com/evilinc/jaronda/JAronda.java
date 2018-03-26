@@ -14,9 +14,11 @@ import com.evilinc.jaronda.controller.http.StartNewGameHandler;
 import com.evilinc.jaronda.enums.EHttpHandler;
 import com.evilinc.jaronda.gui.JArondaMenuBar;
 import com.evilinc.jaronda.gui.MainFrame;
+import com.jtattoo.plaf.mint.MintLookAndFeel;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.UIManager;
@@ -41,7 +43,7 @@ public class JAronda {
             launchJArondaInGuiMode();
         }
     }
-    
+
     private static boolean isAjpMode() {
         return Boolean.parseBoolean(System.getProperty(SystemConst.AJP_MODE));
     }
@@ -59,6 +61,9 @@ public class JAronda {
 
     private static void initializeGui() {
         try {
+            Properties props = new Properties();
+            props.put("logoString", "JAronda");
+            MintLookAndFeel.setCurrentTheme(props);
             // select the Look and Feel
             UIManager.setLookAndFeel("com.jtattoo.plaf.mint.MintLookAndFeel");
         } catch (Exception ex) {

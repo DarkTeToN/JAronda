@@ -6,6 +6,7 @@
 package com.evilinc.jaronda.controller.serialization;
 
 import com.evilinc.jaronda.exceptions.InvalidAroMoveException;
+import com.evilinc.jaronda.interfaces.IFileParser;
 import com.evilinc.jaronda.model.serialization.aro.AroMove;
 import com.evilinc.jaronda.utils.FileUtils;
 import java.io.File;
@@ -18,17 +19,16 @@ import java.util.List;
  *
  * @author teton
  */
-public class AroParser {
+public class AroParser implements IFileParser {
 
-    private final File file;
 
-    public AroParser(final File fileToParse) {
-        this.file = fileToParse;
+    public AroParser() {
     }
 
-    public List<AroMove> parse() throws IOException, InvalidAroMoveException {
+    @Override
+    public List<AroMove> parse(final File fileToParse) throws IOException, InvalidAroMoveException {
         final List<AroMove> movesList = new ArrayList<>();
-        final String fileContent = FileUtils.getTextFileAsString(file);
+        final String fileContent = FileUtils.getTextFileAsString(fileToParse);
         final String[] moves = fileContent.split(";");
         for (final String currentMove : moves) {
             movesList.add(new AroMove(currentMove.trim()));
@@ -36,9 +36,10 @@ public class AroParser {
         return movesList;
     }
 
-    public void writeToFile(final List<AroMove> gameMoves) throws IOException {
+    @Override
+    public void serialize(final File outputFile, final List<AroMove> gameMoves) throws IOException {
         final StringBuilder outputContentBuilder = new StringBuilder();
-        final FileWriter outputFileWriter = new FileWriter(file, false);
+        final FileWriter outputFileWriter = new FileWriter(outputFile, false);
         for (final AroMove currentMove : gameMoves) {
             outputContentBuilder.append(currentMove).append(";");
         }
