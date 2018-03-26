@@ -48,12 +48,10 @@ public class ComputerPlayer {
         for (int row = 0; row < gameBoard.length; row++) {
             for (int squareNumber = 0; squareNumber < gameBoard[row].length; squareNumber++) {
                 if (RuleController.isMoveLegal(squareController.getSquareAt(row, squareNumber), player)) {
-                    System.out.println("Playing: " + row + "-" + squareNumber);
                     final Move playedMove = squareController.playMoveAt(row, squareNumber, player);
                     turnController.playMove();
                     if (turnController.getCurrentPlayer() == player) {
                         temp = calculateMax(max, Integer.MAX_VALUE, maxProof - 1);
-                        System.out.println("calculateMax: " + temp);
                         if (temp > max) {
                             max = temp;
                             maxRow = row;
@@ -62,7 +60,6 @@ public class ComputerPlayer {
                         }
                     } else {
                         temp = calculateMin(min, Integer.MAX_VALUE, maxProof - 1);
-                        System.out.println("calculateMin: " + temp);
                         if (temp > min) {
                             min = temp;
                             maxRow = row;
@@ -70,7 +67,6 @@ public class ComputerPlayer {
                             borne = min;
                         }
                     }
-                    System.out.println("Cancelling: " + row + "-" + squareNumber);
                     turnController.cancelMove();
                     squareController.cancelMove(playedMove);
                 }
@@ -218,9 +214,9 @@ public class ComputerPlayer {
         final int numberOfConqueredBlackSquares = 10 * squareController.getNumberOfBlackConqueredSquares();
         final int numberOfConqueredWhiteSquares = 10 * squareController.getNumberOfWhiteConqueredSquares();
         if (winner == player) {
-            return 100000 + (EPlayer.BLACK == player ? numberOfConqueredBlackSquares : numberOfConqueredWhiteSquares);
+            return 10000 + (EPlayer.BLACK == player ? numberOfConqueredBlackSquares : numberOfConqueredWhiteSquares);
         } else if (winner != null) {
-            return -100000 + (EPlayer.BLACK == player ? numberOfConqueredWhiteSquares : numberOfConqueredBlackSquares);
+            return -10000 + (EPlayer.BLACK == player ? numberOfConqueredWhiteSquares : numberOfConqueredBlackSquares);
         }
 
         int cpuScore = 0;
@@ -234,17 +230,18 @@ public class ComputerPlayer {
                     cpuScore += numberOfAdjacentSquaresScore;
                     opponentScore += numberOfAdjacentSquaresScore;
                     if (player == EPlayer.BLACK) {
-                        cpuScore += (10 + row) * currentSquare.numberOfBlackPawns;
-                        opponentScore += (10 + row) * currentSquare.numberOfWhitePawns;
+                        cpuScore += (10 + row + currentSquare.numberOfBlackPawns - currentSquare.numberOfWhitePawns) * currentSquare.numberOfBlackPawns;
+                        opponentScore += (10 + row + currentSquare.numberOfWhitePawns - currentSquare.numberOfBlackPawns) * currentSquare.numberOfWhitePawns;
+
                     } else {
-                        cpuScore += (10 + row) * currentSquare.numberOfWhitePawns;
-                        opponentScore += (10 + row) * currentSquare.numberOfBlackPawns;
+                        opponentScore += (10 + row + currentSquare.numberOfBlackPawns - currentSquare.numberOfWhitePawns) * currentSquare.numberOfBlackPawns;
+                        cpuScore += (10 + row + currentSquare.numberOfWhitePawns - currentSquare.numberOfBlackPawns) * currentSquare.numberOfWhitePawns;
                     }
                 } else {
                     if (conqueringPlayer == player) {
-                        cpuScore += ((10 + row - 3) * currentSquare.getNecessaryPawnsToConquer());
+                        cpuScore += ((20 + row - 3) * currentSquare.getNecessaryPawnsToConquer());
                     } else {
-                        opponentScore += ((10 + row - 3) * currentSquare.getNecessaryPawnsToConquer());
+                        opponentScore += ((20 + row - 3) * currentSquare.getNecessaryPawnsToConquer());
                     }
                 }
             }
