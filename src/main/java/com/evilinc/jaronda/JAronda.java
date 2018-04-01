@@ -12,6 +12,9 @@ import com.evilinc.jaronda.controller.http.GetBoardHttpHandler;
 import com.evilinc.jaronda.controller.http.PlayMoveHttpHandler;
 import com.evilinc.jaronda.controller.http.StartNewGameHandler;
 import com.evilinc.jaronda.enums.EHttpHandler;
+import com.evilinc.jaronda.enums.EPlayer;
+import com.evilinc.jaronda.enums.EPlayerType;
+import com.evilinc.jaronda.exceptions.IllegalMoveException;
 import com.evilinc.jaronda.gui.JArondaMenuBar;
 import com.evilinc.jaronda.gui.MainFrame;
 import com.jtattoo.plaf.mint.MintLookAndFeel;
@@ -39,6 +42,8 @@ public class JAronda {
     public static void main(String[] args) throws IOException {
         if (isAjpMode()) {
             launchJArondaInConsoleMode();
+        } else if (isTestAiMode()) {
+            launchJArondaInAiTestMode();
         } else {
             launchJArondaInGuiMode();
         }
@@ -48,9 +53,19 @@ public class JAronda {
         return Boolean.parseBoolean(System.getProperty(SystemConst.AJP_MODE));
     }
 
+    private static boolean isTestAiMode() {
+        return Boolean.parseBoolean(System.getProperty(SystemConst.AI_TEST_MODE));
+    }
+
     private static void launchJArondaInConsoleMode() throws IOException {
         initializeGameControllers();
         launchArondaHttpServer();
+    }
+
+    private static void launchJArondaInAiTestMode() throws IOException {
+        System.out.println("AI Test Mode");
+        initializeGameControllers();
+        launchAiTestGame();
     }
 
     private static void launchJArondaInGuiMode() {
@@ -101,6 +116,14 @@ public class JAronda {
         server.createContext(EHttpHandler.PLAY_MOVE.getContext(), new PlayMoveHttpHandler(gameController));
         server.setExecutor(null); // creates a default executor
         server.start();
+    }
+
+    private static void launchAiTestGame() throws IOException {
+        EPlayer.BLACK.playerType = EPlayerType.CPU;
+        EPlayer.WHITE.playerType = EPlayerType.CPU;
+        for (int i = 0; i < 250; i++) {
+            gameController.startNewGame();
+        }
     }
 
 }

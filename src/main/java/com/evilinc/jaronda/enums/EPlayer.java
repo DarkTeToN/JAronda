@@ -27,10 +27,6 @@ public enum EPlayer {
         return playerColor;
     }
 
-    public EPlayerType getPlayerType() {
-        return playerType;
-    }
-    
     public static EPlayer fromString(final String player) {
         for (final EPlayer currentPlayer : values()) {
             if (currentPlayer.name().equals(player)) {

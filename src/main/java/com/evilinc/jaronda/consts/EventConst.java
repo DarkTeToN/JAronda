@@ -3,14 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.evilinc.jaronda.enums;
+package com.evilinc.jaronda.consts;
 
 /**
  *
  * @author teton
  */
-public enum EPlayerType {
-    INTERNET,
-    CPU,
-    HUMAN;
+public class EventConst {
+    public static final String MOVE_PLAYED = "movePlayed";
+    public static final String PLAYER_TURN = "playerTurn";
 }
