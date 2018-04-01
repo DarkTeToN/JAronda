@@ -15,5 +15,6 @@ public class SystemConst {
     public static final String AI_TEST_MODE = "aiTestMode";
     public static final int BAD_NUMBER_OF_ARGUMENTS_EXIT_STATUS = 1;
     public static final int ILLEGAL_MOVE_EXIT_STATUS = 2;
+    public static final int TCP_PORT = 11815;
     
 }

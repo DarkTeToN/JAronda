@@ -5,6 +5,8 @@
  */
 package com.evilinc.jaronda.model;
 
+import com.evilinc.jaronda.model.serialization.json.JsonMove;
+
 /**
  *
  * @author teton
@@ -13,4 +15,5 @@ public class EventBean {
     
     public String playerTurn;
     public int[] movePlayed;
+    public JsonMove lastMoveNotification;
 }

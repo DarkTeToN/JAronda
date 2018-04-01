@@ -11,5 +11,9 @@ package com.evilinc.jaronda.consts;
  */
 public class EventConst {
     public static final String MOVE_PLAYED = "movePlayed";
-    public static final String PLAYER_TURN = "playerTurn";
+    public static final String NETWORK_MOVE_PLAYED = "networkMovePlayed";
+    public static final String NOTIFY_LAST_PLAYED_MOVE = "lastMoveNotification";
+    public static final String NETWORK_MESSAGE_RECEIVED = "networkMessageReceived";
+    public static final String WAITING_CLIENT_CONNECTION = "waitingForClientConnection";
+    public static final String CLIENT_CONNECTION_OK = "clientConnected";
 }

@@ -16,12 +16,14 @@ import com.evilinc.jaronda.gui.JArondaMenuBar;
 import com.evilinc.jaronda.gui.RemainingMovesPanel;
 import com.evilinc.jaronda.interfaces.IFileParser;
 import com.evilinc.jaronda.interfaces.IGameController;
+import com.evilinc.jaronda.model.factory.PlayerFactory;
 import com.evilinc.jaronda.model.game.Move;
 import com.evilinc.jaronda.model.game.Square;
 import com.evilinc.jaronda.model.player.APlayer;
-import com.evilinc.jaronda.model.factory.PlayerFactory;
+import com.evilinc.jaronda.model.player.InternetPlayer;
 import com.evilinc.jaronda.model.serialization.aro.AroMove;
 import com.evilinc.jaronda.model.serialization.json.JsonBoard;
+import com.evilinc.jaronda.model.serialization.json.JsonMove;
 import com.evilinc.jaronda.model.serialization.json.JsonSquare;
 import java.awt.Cursor;
 import java.awt.Point;
@@ -69,10 +71,10 @@ public class GameController implements IGameController {
 
     private void initializeEventListeners() {
         eventController.addPropertyChangeListener(EventConst.MOVE_PLAYED, (PropertyChangeEvent evt) -> {
-            final int[] playedMove = (int[]) evt.getNewValue();
+            final JsonMove playedMove = (JsonMove) evt.getNewValue();
             final APlayer currentPlayer = (APlayer) evt.getOldValue();
             try {
-                playMoveAt(currentPlayer, playedMove[0], playedMove[1]);
+                playMoveAt(currentPlayer, playedMove.row, playedMove.squareNumber);
             } catch (IllegalMoveException ex) {
                 Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -166,7 +168,28 @@ public class GameController implements IGameController {
         playedMoves.clear();
         initializePlayers();
         updateDisplay();
-        notifyPlayerTurn();
+        updatePlayerConnections();
+        notifyPlayerTurn(null);
+    }
+
+    private void updatePlayerConnections() {
+        if (EPlayer.WHITE.playerType == EPlayerType.INTERNET_CLIENT) {
+            eventController.addPropertyChangeListener(EventConst.CLIENT_CONNECTION_OK, (PropertyChangeEvent evt) -> {
+                boardPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            });
+            waitForPlayerConnection();
+        } else if (EPlayer.BLACK.playerType == EPlayerType.INTERNET_HOST) {
+            new Thread(() -> {
+                ((InternetPlayer) blackPlayer).startConnexion();
+            }).start();
+        }
+    }
+
+    private void waitForPlayerConnection() {
+        boardPanel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        new Thread(() -> {
+            ((InternetPlayer) whitePlayer).startConnexion();
+        }).start();
     }
 
     private void initializePlayers() {
@@ -194,20 +217,27 @@ public class GameController implements IGameController {
 
     public void playMoveAt(final int row, final int squareNumber) throws IllegalMoveException {
         final Square playedSquare = squareController.getSquareAt(row, squareNumber);
+        boolean notification = !(turnController.getCurrentPlayer().playerType == EPlayerType.INTERNET_CLIENT
+                || turnController.getCurrentPlayer().playerType == EPlayerType.INTERNET_HOST);
+        System.out.println("notification: " + notification);
         RuleController.checkMoveValidity(playedSquare, turnController.getCurrentPlayer());
         final Move playedMove = squareController.playMoveAt(row, squareNumber, turnController.getCurrentPlayer());
         playedMoves.push(playedMove);
         turnController.playMove();
+        if (notification) {
+            notifyPlayerTurn(playedMove);
+        }
         updateDisplay();
-        notifyPlayerTurn();
     }
 
-    private void notifyPlayerTurn() {
+    private void notifyPlayerTurn(final Move playedMove) {
         if (winner == null) {
             if (turnController.getCurrentPlayer() == EPlayer.BLACK) {
-                blackPlayer.playMove(squareController.getSquares());
+                blackPlayer.playMove(squareController.getSquares(), playedMove);
+                whitePlayer.playMove(squareController.getSquares(), playedMove);
             } else {
-                whitePlayer.playMove(squareController.getSquares());
+                blackPlayer.playMove(squareController.getSquares(), playedMove);
+                whitePlayer.playMove(squareController.getSquares(), playedMove);
             }
         }
     }

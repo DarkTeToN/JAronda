@@ -7,6 +7,7 @@ package com.evilinc.jaronda.model.player;
 
 import com.evilinc.jaronda.controller.game.EventController;
 import com.evilinc.jaronda.enums.EPlayer;
+import com.evilinc.jaronda.model.game.Move;
 import com.evilinc.jaronda.model.game.Square;
 
 /**
@@ -23,6 +24,6 @@ public abstract class APlayer {
         this.color = color;
     }
 
-    public abstract void playMove(final Square[][] board);
+    public abstract void playMove(final Square[][] board, final Move lastPlayedMove);
     
 }

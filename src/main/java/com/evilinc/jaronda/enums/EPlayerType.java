@@ -10,7 +10,8 @@ package com.evilinc.jaronda.enums;
  * @author teton
  */
 public enum EPlayerType {
-    INTERNET,
+    INTERNET_HOST,
+    INTERNET_CLIENT,
     CPU,
     HUMAN;
 }

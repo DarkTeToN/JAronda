@@ -6,6 +6,7 @@
 package com.evilinc.jaronda.model.player;
 
 import com.evilinc.jaronda.enums.EPlayer;
+import com.evilinc.jaronda.model.game.Move;
 import com.evilinc.jaronda.model.game.Square;
 
 /**
@@ -19,7 +20,7 @@ public class HumanPlayer extends APlayer {
     }
 
     @Override
-    public void playMove(Square[][] board) {
+    public void playMove(final Square[][] board, final Move playedMove) {
         // Nothing to do here since we're waiting for the player to click on the board.
         // This part is directly handled by the GameController.
     }

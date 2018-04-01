@@ -11,10 +11,10 @@ import com.evilinc.jaronda.controller.game.GameController;
 import com.evilinc.jaronda.controller.http.GetBoardHttpHandler;
 import com.evilinc.jaronda.controller.http.PlayMoveHttpHandler;
 import com.evilinc.jaronda.controller.http.StartNewGameHandler;
+import com.evilinc.jaronda.controller.tcp.NetworkController;
 import com.evilinc.jaronda.enums.EHttpHandler;
 import com.evilinc.jaronda.enums.EPlayer;
 import com.evilinc.jaronda.enums.EPlayerType;
-import com.evilinc.jaronda.exceptions.IllegalMoveException;
 import com.evilinc.jaronda.gui.JArondaMenuBar;
 import com.evilinc.jaronda.gui.MainFrame;
 import com.jtattoo.plaf.mint.MintLookAndFeel;
@@ -95,6 +95,7 @@ public class JAronda {
 
     private static void initializeGameControllers() {
         gameController = new GameController();
+        NetworkController.getInstance();
     }
 
     private static void initializeGraphicalControllers() {

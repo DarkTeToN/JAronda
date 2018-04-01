@@ -5,6 +5,7 @@
  */
 package com.evilinc.jaronda.model.player;
 
+import com.evilinc.jaronda.consts.EventConst;
 import com.evilinc.jaronda.controller.game.RuleController;
 import com.evilinc.jaronda.controller.game.SquareController;
 import com.evilinc.jaronda.controller.game.TurnController;
@@ -35,11 +36,11 @@ public class AIPlayer extends APlayer {
     }
 
     @Override
-    public void playMove(Square[][] board) {
+    public void playMove(final Square[][] board, final Move lastPlayedMove) {
         Thread aiCalculusThread = new Thread(() -> {
             final int[] playedMove = getMove(board);
             SwingUtilities.invokeLater(() -> {
-                eventController.firePropertyChange("movePlayed", AIPlayer.this, playedMove);
+                eventController.firePropertyChange(EventConst.MOVE_PLAYED, AIPlayer.this, playedMove);
             });
         });
         aiCalculusThread.start();

@@ -25,6 +25,8 @@ import javax.swing.JRadioButton;
 public class NewGameDialog extends JDialog {
 
     private final JLabel messagelabel = new JLabel("New game:");
+    private final JRadioButton hostNewGameRadioButton = new JRadioButton("Host a new game");
+    private final JRadioButton connectToNewGameRadioButton = new JRadioButton("Connect to a new game");
     private final JRadioButton playAsBlackRadioButton = new JRadioButton("Play as Black");
     private final JRadioButton playAsWhiteRadioButton = new JRadioButton("Play as White");
     private final JRadioButton analysisModeRadioButton = new JRadioButton("Human VS Human (Analysis mode)");
@@ -47,6 +49,8 @@ public class NewGameDialog extends JDialog {
         buttonGroup.add(playAsBlackRadioButton);
         buttonGroup.add(analysisModeRadioButton);
         buttonGroup.add(playAsWhiteRadioButton);
+        buttonGroup.add(hostNewGameRadioButton);
+        buttonGroup.add(connectToNewGameRadioButton);
         analysisModeRadioButton.setSelected(true);
         okButton.addActionListener(new ActionListener() {
             @Override
@@ -74,6 +78,10 @@ public class NewGameDialog extends JDialog {
         constraints.weighty = 0;
         getContentPane().add(messagelabel, constraints);
         constraints.gridy++;
+        getContentPane().add(hostNewGameRadioButton, constraints);
+        constraints.gridy++;
+        getContentPane().add(connectToNewGameRadioButton, constraints);
+        constraints.gridy++;
         getContentPane().add(playAsBlackRadioButton, constraints);
         constraints.gridy++;
         getContentPane().add(playAsWhiteRadioButton, constraints);
@@ -89,9 +97,15 @@ public class NewGameDialog extends JDialog {
     }
 
     private void updateUserChoice() {
-        if (playAsBlackRadioButton.isSelected()) {
-            EPlayer.WHITE.playerType = EPlayerType.CPU;
+        if (hostNewGameRadioButton.isSelected()) {
+            EPlayer.WHITE.playerType = EPlayerType.INTERNET_CLIENT;
             EPlayer.BLACK.playerType = EPlayerType.HUMAN;
+        } else if (connectToNewGameRadioButton.isSelected()) {
+            EPlayer.BLACK.playerType = EPlayerType.INTERNET_HOST;
+            EPlayer.WHITE.playerType = EPlayerType.HUMAN;
+        } else if (playAsWhiteRadioButton.isSelected()) {
+            EPlayer.BLACK.playerType = EPlayerType.CPU;
+            EPlayer.WHITE.playerType = EPlayerType.HUMAN;
         } else if (playAsWhiteRadioButton.isSelected()) {
             EPlayer.BLACK.playerType = EPlayerType.CPU;
             EPlayer.WHITE.playerType = EPlayerType.HUMAN;
